@@ -70,7 +70,7 @@ class FamilyNodeWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 color: node.isPatient ? Colors.blue.shade200 : null,
-                border: Border.all(color: Colors.black12),
+                border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
