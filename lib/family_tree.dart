@@ -10,7 +10,6 @@ import 'package:family_tree/widgets/family_tree_drawing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final GlobalKey<ScaffoldState> homePageKey = GlobalKey<ScaffoldState>();
 
 class FamilyTree extends StatelessWidget {
   const FamilyTree({
@@ -25,7 +24,6 @@ class FamilyTree extends StatelessWidget {
         context.read<FamilyTreeBloc>().add(FamilyTreeLoadingEvent());
 
         return Scaffold(
-          key: homePageKey,
           body: BlocConsumer<FamilyTreeBloc, FamilyTreeState>(
             listener: (context, state) {},
             builder: (context, state) {

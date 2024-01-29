@@ -28,12 +28,12 @@ class AddSiblings extends StatelessWidget {
       builder: (context, state) {
         return state is NodeDataLoaded
             ? AlertDialog(
-                title: const Text("Edit Details"),
+                title: const Text("Add Siblings"),
                 content: SingleChildScrollView(
                   child: Column(
                     children: [
                       TextField(
-                        controller: nameController..text = state.name ?? "",
+                        controller: nameController,
                         decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
@@ -51,9 +51,7 @@ class AddSiblings extends StatelessWidget {
                         Expanded(
                           child: TextField(
                             controller: yearOfBirthController
-                              ..text = state.yearOfBirth == null
-                                  ? ''
-                                  : state.yearOfBirth.toString(),
+                             ,
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
@@ -75,9 +73,7 @@ class AddSiblings extends StatelessWidget {
                         Expanded(
                           child: TextField(
                             controller: yearOfDeathController
-                              ..text = state.yearOfDeath == null
-                                  ? ''
-                                  : state.yearOfDeath.toString(),
+                             ,
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
@@ -173,7 +169,7 @@ class AddSiblings extends StatelessWidget {
                 actions: [
                   ElevatedButton(
                     onPressed: () {
-                      homePageKey.currentContext!.read<FamilyTreeBloc>().add(
+                    context.read<FamilyTreeBloc>().add(
                             UpdateFamilyTreeNodeEvent(
                                 node: node,
                                 name: nameController.text.isNotEmpty

@@ -66,6 +66,15 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       lowestLevel = event.father.level;
       loadFamilyTree(emit);
     });
+
+    on<AddSiblings>((event, emit) {
+      event.father.relationData.add(
+          RelationData(relatedUserId: event.sibling.id, relationTypeId: 2));
+      event.mother.relationData.add(
+          RelationData(relatedUserId: event.sibling.id, relationTypeId: 2));
+      nodes.add(event.sibling);
+      loadFamilyTree(emit);
+    });
   }
 
   void loadFamilyTree(emit) {

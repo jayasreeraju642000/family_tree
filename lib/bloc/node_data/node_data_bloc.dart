@@ -1,3 +1,4 @@
+import 'package:family_tree/data/data.dart';
 import 'package:family_tree/widgets/edit_node_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

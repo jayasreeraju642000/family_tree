@@ -162,7 +162,7 @@ class EditNodeData extends StatelessWidget {
                 actions: [
                   ElevatedButton(
                     onPressed: () {
-                      homePageKey.currentContext! .read<FamilyTreeBloc>().add(
+                   context .read<FamilyTreeBloc>().add(
                             UpdateFamilyTreeNodeEvent(
                                 node: node,
                                 name: nameController.text.isNotEmpty

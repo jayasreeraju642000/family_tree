@@ -51,7 +51,7 @@ class FamilyNodeWidget extends StatelessWidget {
                         node: node,
                       ),
                     ).then((value) {
-                      homePageKey.currentContext!
+                      context
                           .read<FamilyTreeBloc>()
                           .add(FamilyTreeLoadingEvent());
                     });
@@ -107,7 +107,11 @@ class FamilyNodeWidget extends StatelessWidget {
                             node: node,
                           ),
                         ),
-                      );
+                      ).then((value) {
+                      context
+                          .read<FamilyTreeBloc>()
+                          .add(FamilyTreeLoadingEvent());
+                    });
                     },
                     child: Icon(
                       Icons.edit_outlined,

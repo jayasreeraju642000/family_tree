@@ -28,6 +28,19 @@ final class AddFamilyNodeEvent extends FamilyTreeEvent {
 
 final class UpdateOrAddParents extends FamilyTreeEvent {
   final FamilyModel father, mother, child;
-  UpdateOrAddParents(
-      {required this.child, required this.father, required this.mother});
+  UpdateOrAddParents({
+    required this.child,
+    required this.father,
+    required this.mother,
+  });
+}
+
+final class AddSiblings extends FamilyTreeEvent {
+  final FamilyModel father, mother, sibling;
+
+  AddSiblings({
+    required this.father,
+    required this.mother,
+    required this.sibling,
+  });
 }
