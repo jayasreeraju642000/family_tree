@@ -1,4 +1,3 @@
-import 'package:family_tree/bloc/family_tree/family_tree_bloc.dart';
 import 'package:family_tree/bloc/node_data/node_data_bloc.dart';
 import 'package:family_tree/widgets/add_relation.dart';
 import 'package:family_tree/widgets/edit_node_data.dart';
@@ -70,7 +69,7 @@ class FamilyNodeWidget extends StatelessWidget {
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                color: node.isPatient ? Colors.blue.shade200 : Colors.white,
+                color: node.isPatient ? Colors.blue.shade200 : null,
                 border: Border.all(color: Colors.black12),
                 borderRadius: BorderRadius.circular(12),
               ),
