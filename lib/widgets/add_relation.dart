@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:family_tree/data/data.dart';
 
 class AddRelation extends StatelessWidget {
-  final FamilyModel node;
+  final Person node;
   const AddRelation({super.key, required this.node});
 
   @override

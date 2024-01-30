@@ -6,7 +6,7 @@ sealed class FamilyTreeEvent {}
 final class FamilyTreeLoadingEvent extends FamilyTreeEvent {}
 
 final class UpdateFamilyTreeNodeEvent extends FamilyTreeEvent {
-  final FamilyModel node;
+  final Person node;
   final String? name;
   final String? gender;
   final int? yearOfBirth;
@@ -21,13 +21,13 @@ final class UpdateFamilyTreeNodeEvent extends FamilyTreeEvent {
 }
 
 final class AddFamilyNodeEvent extends FamilyTreeEvent {
-  final FamilyModel node;
+  final Person node;
 
   AddFamilyNodeEvent({required this.node});
 }
 
 final class UpdateOrAddParents extends FamilyTreeEvent {
-  final FamilyModel father, mother, child;
+  final Person father, mother, child;
   UpdateOrAddParents({
     required this.child,
     required this.father,
@@ -36,7 +36,7 @@ final class UpdateOrAddParents extends FamilyTreeEvent {
 }
 
 final class AddSiblings extends FamilyTreeEvent {
-  final FamilyModel father, mother, sibling;
+  final Person father, mother, sibling;
 
   AddSiblings({
     required this.father,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:family_tree/data/data.dart';
 
 class FamilyTreeDrawing extends StatefulWidget {
-  final List<FamilyModel> nodes;
+  final List<Person> nodes;
   final double width;
   final double height;
   final double nodeWidth;
@@ -43,7 +43,7 @@ class _FamilyTreeDrawingState extends State<FamilyTreeDrawing> {
 }
 
 class FamilyTreePainter extends CustomPainter {
-  final List<FamilyModel> nodes;
+  final List<Person> nodes;
   final double horizontalGap;
   final double verticalGap;
   final double nodeHeight;
@@ -116,12 +116,12 @@ class FamilyTreePainter extends CustomPainter {
             Offset((node.xCoordinate) + nodeWidth / 2,
                 (node.yCoordinates) - verticalGap / 4),
             Offset((node.xCoordinate) + nodeWidth / 2,
-                (node.yCoordinates) + verticalGap / 4),
+                (node.yCoordinates) + verticalGap / 6),
             Paint()
               ..color = Colors.grey
               ..strokeWidth = 1);
       }
-      List<FamilyModel> nodesWithSameParents = [];
+      List<Person> nodesWithSameParents = [];
 
       nodes
           .where((element) => element.level == node.level)
@@ -170,7 +170,7 @@ class FamilyTreePainter extends CustomPainter {
           var commonChildren = childrenIdsOfNode
               .where((element) => childrenIdsOfPartner.contains(element))
               .toList();
-          List<FamilyModel> childrenNodes = [];
+          List<Person> childrenNodes = [];
           for (var child in commonChildren) {
             childrenNodes
                 .add(nodes.firstWhere((element) => element.id == child));

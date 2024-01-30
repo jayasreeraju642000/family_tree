@@ -9,11 +9,11 @@ part 'family_tree_event.dart';
 part 'family_tree_state.dart';
 
 class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
-  static List<FamilyModel> nodes = [];
+  static List<Person> nodes = [];
 
-  List<FamilyModel> sampleData =
-      sample.map((e) => FamilyModel.fromMap(e)).toList();
-  List<FamilyModel> visitedNodes = [];
+  List<Person> sampleData =
+      sample.map((e) => Person.fromMap(e)).toList();
+  List<Person> visitedNodes = [];
   Map<int, double> lastLevelWiseXcordinate = {};
   int largestLevel = 0;
   int lowestLevel = 0;
@@ -135,7 +135,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   }
 
   void getpartnerAndChild(
-      FamilyModel node, double xCoordinate, double yCoordinates) {
+      Person node, double xCoordinate, double yCoordinates) {
     var partnerNodeIds = node.relationData
         .where((element) => element.relationTypeId == 0)
         .toList();

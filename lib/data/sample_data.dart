@@ -16,43 +16,16 @@ List<Map<String, dynamic>> sample = [
     "gender": "M",
     "isPatient": true
   },
-  {
-    "id": 2,
-    "relationData": [
-      {"relatedUserId": 3, "relationTypeId": 0},
-      {"relatedUserId": 4, "relationTypeId": 1},
-      {"relatedUserId": 5, "relationTypeId": 1},
-      {"relatedUserId": 1, "relationTypeId": 2},
-      {"relatedUserId": 17, "relationTypeId": 2},
-    ],
-    "name": "Tom Hendrickes",
-    "level": -1,
-    "yearOfBirth": 1967,
-    "yearOfDeath": null,
-    "gender": "M"
-  },
-  {
-    "id": 3,
-    "relationData": [
-      {"relatedUserId": 1, "relationTypeId": 2},
-      {"relatedUserId": 17, "relationTypeId": 2},
-      {"relatedUserId": 2, "relationTypeId": 0},
-    ],
-    "name": "Caroline Mayers",
-    "level": -1,
-    "yearOfBirth": 1965,
-    "yearOfDeath": null,
-    "gender": "F"
-  },
-  {
+   {
     "id": 4,
     "relationData": [
       {"relatedUserId": 5, "relationTypeId": 0},
-      {"relatedUserId": 2, "relationTypeId": 2},
       {"relatedUserId": 6, "relationTypeId": 2},
       {"relatedUserId": 7, "relationTypeId": 2},
       {"relatedUserId": 8, "relationTypeId": 2},
       {"relatedUserId": 9, "relationTypeId": 2},
+      {"relatedUserId": 2, "relationTypeId": 2},
+
     ],
     "name": "Daniel",
     "level": -2,
@@ -64,11 +37,12 @@ List<Map<String, dynamic>> sample = [
     "id": 5,
     "relationData": [
       {"relatedUserId": 4, "relationTypeId": 0},
-      {"relatedUserId": 2, "relationTypeId": 2},
       {"relatedUserId": 6, "relationTypeId": 2},
       {"relatedUserId": 7, "relationTypeId": 2},
       {"relatedUserId": 8, "relationTypeId": 2},
       {"relatedUserId": 9, "relationTypeId": 2},
+      {"relatedUserId": 2, "relationTypeId": 2},
+
     ],
     "name": "Dorothy",
     "level": -2,
@@ -726,4 +700,34 @@ List<Map<String, dynamic>> sample = [
     "yearOfDeath": null,
     "gender": "F"
   },
+    {
+    "id": 3,
+    "relationData": [
+      {"relatedUserId": 1, "relationTypeId": 2},
+      {"relatedUserId": 17, "relationTypeId": 2},
+      {"relatedUserId": 2, "relationTypeId": 0},
+    ],
+    "name": "Caroline Mayers",
+    "level": -1,
+    "yearOfBirth": 1965,
+    "yearOfDeath": null,
+    "gender": "F"
+  },
+  {
+    "id": 2,
+    "relationData": [
+      {"relatedUserId": 3, "relationTypeId": 0},
+      {"relatedUserId": 4, "relationTypeId": 1},
+      {"relatedUserId": 5, "relationTypeId": 1},
+      {"relatedUserId": 1, "relationTypeId": 2},
+      {"relatedUserId": 17, "relationTypeId": 2},
+    ],
+    "name": "Tom Hendrickes",
+    "level": -1,
+    "yearOfBirth": 1967,
+    "yearOfDeath": null,
+    "gender": "M"
+  },
+
+ 
 ];

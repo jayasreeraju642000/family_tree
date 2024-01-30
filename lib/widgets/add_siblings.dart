@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:family_tree/data/data.dart';
 
 class AddSiblings extends StatelessWidget {
-  final FamilyModel node;
+  final Person node;
   const AddSiblings({super.key, required this.node});
   @override
   Widget build(BuildContext context) {

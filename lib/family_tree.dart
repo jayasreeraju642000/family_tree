@@ -10,7 +10,6 @@ import 'package:family_tree/widgets/family_tree_drawing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class FamilyTree extends StatelessWidget {
   const FamilyTree({
     super.key,
@@ -18,6 +17,8 @@ class FamilyTree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final verticalScrollController = ScrollController();
+    final horizontalScrollController = ScrollController();
     return BlocProvider(
       create: (context) => FamilyTreeBloc(),
       child: Builder(builder: (context) {
@@ -28,7 +29,8 @@ class FamilyTree extends StatelessWidget {
             listener: (context, state) {},
             builder: (context, state) {
               if (state is FamilyTreeLoaded) {
-                return InteractiveViewer(
+                if (state.nodes.isNotEmpty) {
+                  return InteractiveViewer(
                     constrained: false,
                     minScale: 0.0001,
                     maxScale: 8.0,
@@ -38,7 +40,9 @@ class FamilyTree extends StatelessWidget {
                           left: state.horizontalGap / 2),
                       width: MediaQuery.of(context).size.width,
                       child: SingleChildScrollView(
+                        controller: verticalScrollController,
                         child: SingleChildScrollView(
+                          controller: horizontalScrollController,
                           scrollDirection: Axis.horizontal,
                           child: SizedBox(
                             width: state.viewPortWidth == 0.0
@@ -69,7 +73,11 @@ class FamilyTree extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ));
+                    ),
+                  );
+                } else {
+                  return const Center(child: Text('Tree not found.....'));
+                }
               } else {
                 return const Center(child: Text('Loading.....'));
               }

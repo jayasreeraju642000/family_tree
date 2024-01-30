@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:family_tree/data/data.dart';
 
 class FamilyNodeWidget extends StatelessWidget {
-  final FamilyModel node;
+  final Person node;
   final double widthOfNode;
   final double heightOfNode;
   final Function? function;

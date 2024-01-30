@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-class FamilyModel {
+class Person {
   int id;
   String name;
   String gender;
@@ -14,7 +14,7 @@ class FamilyModel {
   double yCoordinates = 0.0;
   double familyWidth = 0.0;
   bool isPatient;
-  FamilyModel(
+  Person(
       {required this.id,
       required this.name,
       required this.gender,
@@ -24,7 +24,7 @@ class FamilyModel {
       required this.relationData,
       this.isPatient = false});
 
-  FamilyModel copyWith({
+  Person copyWith({
     int? id,
     String? name,
     String? gender,
@@ -34,7 +34,7 @@ class FamilyModel {
     List<RelationData>? relationData,
     bool? isPatient,
   }) {
-    return FamilyModel(
+    return Person(
         id: id ?? this.id,
         name: name ?? this.name,
         gender: gender ?? this.gender,
@@ -58,8 +58,8 @@ class FamilyModel {
     };
   }
 
-  factory FamilyModel.fromMap(Map<String, dynamic> map) {
-    return FamilyModel(
+  factory Person.fromMap(Map<String, dynamic> map) {
+    return Person(
         id: map['id'],
         name: map['name'],
         gender: map['gender'],
@@ -76,8 +76,8 @@ class FamilyModel {
 
   String toJson() => json.encode(toMap());
 
-  factory FamilyModel.fromJson(String source) =>
-      FamilyModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Person.fromJson(String source) =>
+      Person.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -85,7 +85,7 @@ class FamilyModel {
   }
 
   @override
-  bool operator ==(covariant FamilyModel other) {
+  bool operator ==(covariant Person other) {
     if (identical(this, other)) return true;
 
     return other.id == id &&

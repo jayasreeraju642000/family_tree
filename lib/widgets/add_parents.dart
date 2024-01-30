@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddParents extends StatelessWidget {
-  final FamilyModel node;
+  final Person node;
   const AddParents({super.key, required this.node});
 
   @override
   Widget build(BuildContext context) {
     context.read<FamilyTreeBloc>().add(FamilyTreeLoadingEvent());
-    FamilyModel? father;
-    FamilyModel? mother;
+    Person? father;
+    Person? mother;
     return BlocConsumer<FamilyTreeBloc, FamilyTreeState>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -31,7 +31,7 @@ class AddParents extends StatelessWidget {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                DropdownButtonFormField<FamilyModel>(
+                DropdownButtonFormField<Person>(
                   value: father,
                   decoration: InputDecoration(
                       label: const Text("Name of Father: "),
@@ -53,14 +53,14 @@ class AddParents extends StatelessWidget {
                           element.gender == "M")
                       .toList()
                       .map(
-                        (e) => DropdownMenuItem<FamilyModel>(
+                        (e) => DropdownMenuItem<Person>(
                           value: e,
                           child: Text(e.name),
                         ),
                       )
                       .toList()
                     ..add(DropdownMenuItem(
-                      value: FamilyModel(
+                      value: Person(
                           id: -1,
                           name: '',
                           gender: "M",
@@ -75,7 +75,7 @@ class AddParents extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                DropdownButtonFormField<FamilyModel>(
+                DropdownButtonFormField<Person>(
                   value: mother,
                   hint: const Text("Select an option"),
                   decoration: InputDecoration(
@@ -97,14 +97,14 @@ class AddParents extends StatelessWidget {
                           element.gender == "F")
                       .toList()
                       .map(
-                        (e) => DropdownMenuItem<FamilyModel>(
+                        (e) => DropdownMenuItem<Person>(
                           value: e,
                           child: Text(e.name),
                         ),
                       )
                       .toList()
                     ..add(DropdownMenuItem(
-                      value: FamilyModel(
+                      value: Person(
                           id: -1,
                           name: '',
                           gender: "F",
@@ -141,7 +141,7 @@ class AddParents extends StatelessWidget {
   }
 
   void _showAddNewItemDialog(
-      BuildContext context, List<FamilyModel> nodes, bool isFather) {
+      BuildContext context, List<Person> nodes, bool isFather) {
     showDialog(
       context: context,
       builder: (ctx) {
@@ -167,7 +167,7 @@ class AddParents extends StatelessWidget {
                 if (newItem.isNotEmpty) {
                   _addNewItem(
                       context,
-                      FamilyModel(
+                      Person(
                           id: nodes.length + 1,
                           name: newItem,
                           gender: isFather ? "M" : "F",
@@ -188,7 +188,7 @@ class AddParents extends StatelessWidget {
     );
   }
 
-  void _addNewItem(BuildContext context, FamilyModel newItem) {
+  void _addNewItem(BuildContext context, Person newItem) {
     if (context.read<FamilyTreeBloc>().state is FamilyTreeLoaded) {
       if (!(context.read<FamilyTreeBloc>().state as FamilyTreeLoaded)
           .nodes

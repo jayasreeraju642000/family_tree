@@ -9,7 +9,7 @@ import 'package:family_tree/data/data.dart';
 enum Gender { male, female }
 
 class EditNodeData extends StatelessWidget {
-  final FamilyModel node;
+  final Person node;
   const EditNodeData({super.key, required this.node});
 
   @override

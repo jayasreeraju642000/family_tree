@@ -14,7 +14,7 @@ final class FamilyTreeLoading extends FamilyTreeState {
 }
 
 final class FamilyTreeLoaded extends FamilyTreeState {
-  final List<FamilyModel> nodes;
+  final List<Person> nodes;
 
   final double viewPortWidth;
   final double viewPortHeight;
