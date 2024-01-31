@@ -42,7 +42,8 @@ class AddParents extends StatelessWidget {
                   hint: const Text("Select an option"),
                   onChanged: (value) {
                     if (value?.id == -1) {
-                      _showAddNewItemDialog(context, state.nodes, true);
+                      _showAddNewItemDialog(
+                          context, state.nodes, state.verticalGap, value!);
                     } else {
                       father = value;
                     }
@@ -65,9 +66,11 @@ class AddParents extends StatelessWidget {
                           name: '',
                           gender: "M",
                           level: node.level - 1,
+                          xCoordinate: node.xCoordinate,
+                          yCoordinates: node.yCoordinates - state.verticalGap,
                           relationData: [
                             RelationData(
-                                relatedUserId: node.id, relationTypeId: 1)
+                                relatedUserId: node.id, relationTypeId: 2)
                           ]),
                       child: const Text("Add New..."),
                     )),
@@ -86,7 +89,8 @@ class AddParents extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8))),
                   onChanged: (value) {
                     if (value?.id == -1) {
-                      _showAddNewItemDialog(context, state.nodes, false);
+                      _showAddNewItemDialog(
+                          context, state.nodes, state.verticalGap, value!);
                     } else {
                       mother = value;
                     }
@@ -109,9 +113,13 @@ class AddParents extends StatelessWidget {
                           name: '',
                           gender: "F",
                           level: node.level - 1,
+                          xCoordinate: node.xCoordinate +
+                              state.widthOfNode +
+                              state.horizontalGap,
+                          yCoordinates: node.yCoordinates - state.verticalGap,
                           relationData: [
                             RelationData(
-                                relatedUserId: node.id, relationTypeId: 1)
+                                relatedUserId: node.id, relationTypeId: 2)
                           ]),
                       child: const Text("Add New..."),
                     )),
@@ -140,8 +148,8 @@ class AddParents extends StatelessWidget {
     );
   }
 
-  void _showAddNewItemDialog(
-      BuildContext context, List<Person> nodes, bool isFather) {
+  void _showAddNewItemDialog(BuildContext context, List<Person> nodes,
+      double verticalGap, Person parent) {
     showDialog(
       context: context,
       builder: (ctx) {
@@ -167,11 +175,10 @@ class AddParents extends StatelessWidget {
                 if (newItem.isNotEmpty) {
                   _addNewItem(
                       context,
-                      Person(
+                      parent.copyWith(
                           id: nodes.length + 1,
                           name: newItem,
-                          gender: isFather ? "M" : "F",
-                          level: node.level - 1,
+                          
                           relationData: [
                             RelationData(
                               relatedUserId: node.id,

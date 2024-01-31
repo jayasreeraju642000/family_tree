@@ -14,6 +14,8 @@ class Person {
   double yCoordinates = 0.0;
   double familyWidth = 0.0;
   bool isPatient;
+  bool isNodePlaced = false;
+  bool isActive=false;
   Person(
       {required this.id,
       required this.name,
@@ -22,7 +24,9 @@ class Person {
       this.yearOfDeath,
       required this.level,
       required this.relationData,
-      this.isPatient = false});
+      this.isPatient = false,
+      this.xCoordinate = 0.0,
+      this.yCoordinates = 0.0});
 
   Person copyWith({
     int? id,
@@ -33,6 +37,8 @@ class Person {
     int? level,
     List<RelationData>? relationData,
     bool? isPatient,
+    double? xCoordinate,
+    double? yCoordinates,
   }) {
     return Person(
         id: id ?? this.id,
@@ -42,7 +48,9 @@ class Person {
         yearOfDeath: yearOfDeath ?? this.yearOfDeath,
         level: level ?? this.level,
         relationData: relationData ?? this.relationData,
-        isPatient: isPatient ?? this.isPatient);
+        isPatient: isPatient ?? this.isPatient,
+        xCoordinate: xCoordinate ?? this.xCoordinate,
+        yCoordinates: yCoordinates ?? this.yCoordinates);
   }
 
   Map<String, dynamic> toMap() {
@@ -71,7 +79,7 @@ class Person {
             (x) => RelationData.fromMap(x),
           ),
         ),
-        isPatient: map["isPatient"]??false);
+        isPatient: map["isPatient"] ?? false);
   }
 
   String toJson() => json.encode(toMap());

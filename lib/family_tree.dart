@@ -30,6 +30,14 @@ class FamilyTree extends StatelessWidget {
             builder: (context, state) {
               if (state is FamilyTreeLoaded) {
                 if (state.nodes.isNotEmpty) {
+                  Future.delayed(
+                    const Duration(seconds: 1),
+                    () {
+                      horizontalScrollController.jumpTo(state.nodes
+                          .firstWhere((element) => element.isPatient)
+                          .xCoordinate);
+                    },
+                  );
                   return InteractiveViewer(
                     constrained: false,
                     minScale: 0.0001,

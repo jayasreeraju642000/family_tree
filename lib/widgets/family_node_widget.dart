@@ -21,6 +21,7 @@ class FamilyNodeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print((node.xCoordinate,node.yCoordinates,node.name));
     return Positioned(
       top: node.yCoordinates,
       left: node.xCoordinate,
