@@ -49,8 +49,9 @@ final class AddSiblings extends FamilyTreeEvent {
 
 final class UpdateVisibilityOfRelatedNodes extends FamilyTreeEvent {
   final Person node;
+  final bool isExpanded;
 
-  UpdateVisibilityOfRelatedNodes({required this.node});
+  UpdateVisibilityOfRelatedNodes({required this.node,required this.isExpanded});
 }
 
 final class AddPartnerNodeEvent extends FamilyTreeEvent {

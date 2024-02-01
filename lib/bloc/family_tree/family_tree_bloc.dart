@@ -117,42 +117,34 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
         nodeFamiliesExpandedId[event.node.id] =
             !nodeFamiliesExpandedId[event.node.id]!;
       }
-      var node = nodes.firstWhere((element) => element.id == event.node.id);
-      visibiltyChangeOfPartnerAndChild(node);
-      var parentIds = node.relationData
-          .where((element) => element.relationTypeId == 1)
-          .toList()
-          .map((relation) => relation.relatedUserId)
-          .toList();
-      var parents = parentIds
-          .map((relationId) =>
-              nodes.firstWhere((element) => element.id == relationId))
-          .toList();
-      for (var element in parents) {
-        element.isActive = true;
-        // if (nodeFamiliesExpandedId.containsKey(element.id)) {
-        //   if (nodeFamiliesExpandedId[element.id] == true) {
-        //     break;
-        //   }
-        // } else {
-        //   element.isActive = !element.isActive;
-        //   var childernIdsOfParents = element.relationData
-        //       .where((p) => p.relationTypeId == 2)
-        //       .map((q) => q.relatedUserId)
-        //       .toList();
-        //   var childernOfParents = childernIdsOfParents
-        //       .map((rId) => nodes.firstWhere((element) => element.id == rId))
-        //       .toList();
-        //   childernOfParents.removeWhere((element) => element.id == node.id);
-        //   for (var item in childernOfParents) {
-        //     item.isActive = element.isActive;
-        //   }
-        //   for (var child in childernOfParents) {
-        //     visibiltyChangeOfPartnerAndChild(child);
-        //   }
-        // }
-      }
+      if (!event.isExpanded) {
+        var node = nodes.firstWhere((element) => element.id == event.node.id);
+        var relations = node.relationData
+            .map((r) => r.relatedUserId)
+            .toList()
+            .map((i) => nodes.firstWhere((node) => node.id == i))
+            .toList();
+        for (var relation in relations) {
+          relation.isActive = true;
+        }
+      } else {
+        var children = event.node.relationData
+            .where((element) => element.relationTypeId == 2)
+            .toList()
+            .map((id) => id.relatedUserId)
+            .toList()
+            .map((child) => nodes.firstWhere((node) => node.id == child))
+            .toList();
+        exansionHidingForChildren(children);
 
+        nodes.where((element) => element.isActive).toList().forEach((element) {
+          element.isActive = false;
+        });
+      }
+      var outputKeys = nodeFamiliesExpandedId.keys
+          .where((key) => nodeFamiliesExpandedId[key] == true)
+          .toList();
+      print(outputKeys);
       loadFamilyTree(emit);
     });
 
@@ -164,18 +156,19 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
     });
   }
 
-  void visibiltyChangeOfPartnerAndChild(Person node) {
-    var partnerIds = node.relationData
-        .where((element) => element.relationTypeId != 1)
-        .toList()
-        .map((relation) => relation.relatedUserId)
-        .toList();
-    var relationNodes = partnerIds
-        .map((relationId) =>
-            nodes.firstWhere((element) => element.id == relationId))
-        .toList();
-    for (var element in relationNodes) {
-      element.isActive = !element.isActive;
+  void exansionHidingForChildren(List<Person> children) {
+    for (var child in children) {
+      if (nodeFamiliesExpandedId.containsKey(child.id)) {
+        nodeFamiliesExpandedId[child.id] = false;
+        var childrensOfChild = child.relationData
+            .where((element) => element.relationTypeId == 2)
+            .toList()
+            .map((id) => id.relatedUserId)
+            .toList()
+            .map((child) => nodes.firstWhere((node) => node.id == child))
+            .toList();
+        exansionHidingForChildren(childrensOfChild);
+      }
     }
   }
 

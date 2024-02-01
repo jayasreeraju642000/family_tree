@@ -48,7 +48,11 @@ class FamilyNodeWidget extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             context.read<FamilyTreeBloc>().add(
-                                UpdateVisibilityOfRelatedNodes(node: node));
+                                UpdateVisibilityOfRelatedNodes(
+                                    node: node,
+                                    isExpanded: FamilyTreeBloc
+                                            .nodeFamiliesExpandedId[node.id] ==
+                                        true));
                           },
                           child: Icon(
                             FamilyTreeBloc.nodeFamiliesExpandedId[node.id] ==
