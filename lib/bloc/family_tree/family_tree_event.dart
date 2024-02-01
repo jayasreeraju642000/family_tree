@@ -3,7 +3,9 @@ part of 'family_tree_bloc.dart';
 @immutable
 sealed class FamilyTreeEvent {}
 
-final class FamilyTreeLoadingEvent extends FamilyTreeEvent {}
+final class FamilyTreeVisibleNodeLoadingEvent extends FamilyTreeEvent {}
+
+final class FamilyTreeAllNodeLoadingEvent extends FamilyTreeEvent {}
 
 final class UpdateFamilyTreeNodeEvent extends FamilyTreeEvent {
   final Person node;
@@ -22,8 +24,8 @@ final class UpdateFamilyTreeNodeEvent extends FamilyTreeEvent {
 
 final class AddFamilyNodeEvent extends FamilyTreeEvent {
   final Person node;
-
-  AddFamilyNodeEvent({required this.node});
+  final bool isFromAddParents;
+  AddFamilyNodeEvent({required this.node, required this.isFromAddParents});
 }
 
 final class UpdateOrAddParents extends FamilyTreeEvent {
@@ -43,4 +45,18 @@ final class AddSiblings extends FamilyTreeEvent {
     required this.mother,
     required this.sibling,
   });
+}
+
+final class UpdateVisibilityOfRelatedNodes extends FamilyTreeEvent {
+  final Person node;
+
+  UpdateVisibilityOfRelatedNodes({required this.node});
+}
+
+final class AddPartnerNodeEvent extends FamilyTreeEvent {
+  final Person node;
+
+  final Person partnerNode;
+
+  AddPartnerNodeEvent( {required this.node,required this.partnerNode,});
 }

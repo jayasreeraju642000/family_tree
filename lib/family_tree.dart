@@ -22,22 +22,14 @@ class FamilyTree extends StatelessWidget {
     return BlocProvider(
       create: (context) => FamilyTreeBloc(),
       child: Builder(builder: (context) {
-        context.read<FamilyTreeBloc>().add(FamilyTreeLoadingEvent());
+        context.read<FamilyTreeBloc>().add(FamilyTreeVisibleNodeLoadingEvent());
 
         return Scaffold(
           body: BlocConsumer<FamilyTreeBloc, FamilyTreeState>(
             listener: (context, state) {},
             builder: (context, state) {
-              if (state is FamilyTreeLoaded) {
+              if (state is FamilyTreeVisibleNodesLoaded) {
                 if (state.nodes.isNotEmpty) {
-                  Future.delayed(
-                    const Duration(seconds: 1),
-                    () {
-                      horizontalScrollController.jumpTo(state.nodes
-                          .firstWhere((element) => element.isPatient)
-                          .xCoordinate);
-                    },
-                  );
                   return InteractiveViewer(
                     constrained: false,
                     minScale: 0.0001,

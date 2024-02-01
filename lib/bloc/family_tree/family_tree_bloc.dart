@@ -11,6 +11,7 @@ part 'family_tree_state.dart';
 class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   static List<Person> nodes = [];
   static List<Person> activeNodes = [];
+  static Map<int, bool> nodeFamiliesExpandedId = {};
   List<Person> sampleData =
       sample.map((sampleData) => Person.fromMap(sampleData)).toList();
   List<Person> visitedNodes = [];
@@ -21,13 +22,19 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   double viewPortHeight = 0.0;
 
   FamilyTreeBloc() : super(FamilyTreeLoading()) {
-    on<FamilyTreeLoadingEvent>((event, emit) {
+    on<FamilyTreeVisibleNodeLoadingEvent>((event, emit) {
       emit(FamilyTreeLoading());
       if (nodes.isEmpty) {
         nodes = sampleData;
       }
       loadFamilyTree(emit);
     });
+
+    on<FamilyTreeAllNodeLoadingEvent>((event, emit) {
+      emit(FamilyTreeLoading());
+      emit(FamilyTreeAllNodesLoaded(nodes: nodes));
+    });
+
     on<UpdateFamilyTreeNodeEvent>((event, emit) {
       emit(FamilyTreeLoading());
       event.node.name = event.name ?? event.node.name;
@@ -35,35 +42,54 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       event.node.yearOfDeath = event.yearOfDeath;
       event.node.gender = event.gender ?? event.node.gender;
       emit(
-        FamilyTreeLoaded(
+        FamilyTreeVisibleNodesLoaded(
           nodes: nodes,
           viewPortHeight: viewPortHeight,
           viewPortWidth: viewPortWidth,
         ),
       );
     });
+
     on<AddFamilyNodeEvent>((event, emit) {
       emit(FamilyTreeLoading());
       if (!nodes.contains(event.node)) {
-        // print((
-        //   event.node.name,
-        //   event.node.xCoordinate,
-        //   event.node.yCoordinates,
-        //   event.node.level
-        // ));
         event.node.isNodePlaced = true;
         nodes.add(event.node);
       }
-      loadFamilyTree(emit);
+      if (!event.isFromAddParents) {
+        loadFamilyTree(emit);
+      } else {
+        emit(FamilyTreeAllNodesLoaded(nodes: nodes));
+      }
     });
+
     on<UpdateOrAddParents>((event, emit) {
       emit(FamilyTreeLoading());
-      event.father.relationData.addAll([
-        RelationData(relatedUserId: event.mother.id, relationTypeId: 0),
-      ]);
-      event.mother.relationData.addAll([
-        RelationData(relatedUserId: event.father.id, relationTypeId: 0),
-      ]);
+      if (!event.father.relationData
+          .any((element) => element.relatedUserId == event.mother.id)) {
+        event.father.relationData.add(
+          RelationData(relatedUserId: event.mother.id, relationTypeId: 0),
+        );
+      }
+      if (!event.father.relationData
+          .any((element) => element.relatedUserId == event.child.id)) {
+        event.father.relationData.add(
+          RelationData(relatedUserId: event.child.id, relationTypeId: 2),
+        );
+      }
+
+      if (!event.mother.relationData
+          .any((element) => element.relatedUserId == event.father.id)) {
+        event.mother.relationData.add(
+          RelationData(relatedUserId: event.father.id, relationTypeId: 0),
+        );
+      }
+      if (!event.mother.relationData
+          .any((element) => element.relatedUserId == event.child.id)) {
+        event.father.relationData.add(
+          RelationData(relatedUserId: event.child.id, relationTypeId: 2),
+        );
+      }
       event.child.relationData
           .removeWhere((element) => element.relationTypeId == 1);
       event.child.relationData.addAll([
@@ -76,12 +102,81 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
 
     on<AddSiblings>((event, emit) {
       event.father.relationData.add(
-          RelationData(relatedUserId: event.sibling.id, relationTypeId: 2));
+          RelationData(relatedUserId: nodes.length + 1, relationTypeId: 2));
       event.mother.relationData.add(
-          RelationData(relatedUserId: event.sibling.id, relationTypeId: 2));
-      nodes.add(event.sibling);
+          RelationData(relatedUserId: nodes.length + 1, relationTypeId: 2));
+      nodes.add(event.sibling.copyWith(id: nodes.length + 1));
       loadFamilyTree(emit);
     });
+
+    on<UpdateVisibilityOfRelatedNodes>((event, emit) {
+      emit(FamilyTreeLoading());
+      if (!nodeFamiliesExpandedId.containsKey(event.node.id)) {
+        nodeFamiliesExpandedId[event.node.id] = true;
+      } else {
+        nodeFamiliesExpandedId[event.node.id] =
+            !nodeFamiliesExpandedId[event.node.id]!;
+      }
+      var node = nodes.firstWhere((element) => element.id == event.node.id);
+      visibiltyChangeOfPartnerAndChild(node);
+      var parentIds = node.relationData
+          .where((element) => element.relationTypeId == 1)
+          .toList()
+          .map((relation) => relation.relatedUserId)
+          .toList();
+      var parents = parentIds
+          .map((relationId) =>
+              nodes.firstWhere((element) => element.id == relationId))
+          .toList();
+      for (var element in parents) {
+        element.isActive = true;
+        // if (nodeFamiliesExpandedId.containsKey(element.id)) {
+        //   if (nodeFamiliesExpandedId[element.id] == true) {
+        //     break;
+        //   }
+        // } else {
+        //   element.isActive = !element.isActive;
+        //   var childernIdsOfParents = element.relationData
+        //       .where((p) => p.relationTypeId == 2)
+        //       .map((q) => q.relatedUserId)
+        //       .toList();
+        //   var childernOfParents = childernIdsOfParents
+        //       .map((rId) => nodes.firstWhere((element) => element.id == rId))
+        //       .toList();
+        //   childernOfParents.removeWhere((element) => element.id == node.id);
+        //   for (var item in childernOfParents) {
+        //     item.isActive = element.isActive;
+        //   }
+        //   for (var child in childernOfParents) {
+        //     visibiltyChangeOfPartnerAndChild(child);
+        //   }
+        // }
+      }
+
+      loadFamilyTree(emit);
+    });
+
+    on<AddPartnerNodeEvent>((event, emit) {
+      var partner = event.partnerNode.copyWith(id: nodes.length + 1);
+      nodes.add(partner);
+      event.node.relationData
+          .add(RelationData(relatedUserId: partner.id, relationTypeId: 0));
+    });
+  }
+
+  void visibiltyChangeOfPartnerAndChild(Person node) {
+    var partnerIds = node.relationData
+        .where((element) => element.relationTypeId != 1)
+        .toList()
+        .map((relation) => relation.relatedUserId)
+        .toList();
+    var relationNodes = partnerIds
+        .map((relationId) =>
+            nodes.firstWhere((element) => element.id == relationId))
+        .toList();
+    for (var element in relationNodes) {
+      element.isActive = !element.isActive;
+    }
   }
 
   void loadFamilyTree(emit) {
@@ -95,49 +190,28 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
     activeNodes = nodes.where((element) => element.isActive).toList();
     placeNodes();
     correctThePositionOfNotVisitedNodes();
-    
+
     activeNodes.sort(
       (a, b) => a.level.compareTo(b.level),
     );
-    for (var element in visitedNodes) {
-      if (element.xCoordinate > viewPortWidth) {
+
+    for (var element in activeNodes) {
+      if (element.xCoordinate >= viewPortWidth) {
         viewPortWidth = element.xCoordinate +
             2 * state.horizontalGap +
             2 * state.widthOfNode;
       }
+      if (element.yCoordinates >= viewPortHeight) {
+        viewPortHeight = element.yCoordinates +
+            2 * state.verticalGap +
+            2 * state.heightOfNode;
+      }
     }
-    int difference = 0;
-    if (lowestLevel < 0) {
-      difference = 0 - lowestLevel;
-    }
-    for (var item in nodes) {
-      item.yCoordinates = (item.level + difference) * state.verticalGap;
-    }
-    viewPortHeight = (largestLevel - lowestLevel) *
-        (state.verticalGap + state.heightOfNode / 2);
-    print(activeNodes
-        .map((e) => (e.name, e.xCoordinate, e.yCoordinates))
-        .toList());
-    emit(FamilyTreeLoaded(
+
+    emit(FamilyTreeVisibleNodesLoaded(
         nodes: activeNodes,
         viewPortHeight: viewPortHeight,
         viewPortWidth: viewPortWidth));
-
-    // for (int i = lowestLevel; i <= largestLevel; i++) {
-    //   debugPrint("********************   $i   ******************");
-
-    //   var nodesInThisLevel =
-    //       nodes.where((element) => element.level == i).toList();
-    //   nodesInThisLevel.sort(
-    //     (a, b) => a.xCoordinate.compareTo(b.xCoordinate),
-    //   );
-    //   debugPrint("${nodesInThisLevel.map((nodeData) => (
-    //         nodeData.level,
-    //         nodeData.xCoordinate,
-    //         nodeData.yCoordinates,
-    //       )).toList()}");
-    //   debugPrint("********************  / $i   ****************** \n");
-    // }
   }
 
   void placeNodes() {
@@ -148,10 +222,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
         .toList();
     lastLevelWiseXcordinate.clear();
     visitedNodes.clear();
-    // for (int i = 0; i < nodesInTheSameLevel.length; i++) {
-    //   if (visitedNodes.contains(nodesInTheSameLevel[i])) {
-    //     continue;
-    //   }
     visitedNodes.add(nodesInTheSameLevel.first);
     lastLevelWiseXcordinate[lowestLevel] =
         (lastLevelWiseXcordinate[lowestLevel] ?? 0) +
@@ -160,7 +230,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
 
     getpartnerAndChild(nodesInTheSameLevel.first,
         lastLevelWiseXcordinate[lowestLevel + 1] ?? 0, 0);
-    // }
   }
 
   void getpartnerAndChild(
@@ -232,6 +301,12 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
             child.isActive = true;
             if (!activeNodes.contains(child)) {
               activeNodes.add(child);
+            }
+            if (commonChildren.length == 1) {
+              lastLevelWiseXcordinate[node.level + 1] =
+                  partnerNode.xCoordinate +
+                      state.widthOfNode +
+                      state.horizontalGap;
             }
             if (!child.isNodePlaced) {
               getpartnerAndChild(
@@ -308,6 +383,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   void visibilitySetUp() {
     var patient = nodes.firstWhere((element) => element.isPatient);
     patient.isActive = true;
+
     var relationIds =
         patient.relationData.map((relation) => relation.relatedUserId).toList();
     var relationNodes = relationIds

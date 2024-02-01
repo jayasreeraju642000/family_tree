@@ -1,5 +1,8 @@
 import 'package:family_tree/bloc/family_tree/family_tree_bloc.dart';
+import 'package:family_tree/bloc/node_data/node_data_bloc.dart';
 import 'package:family_tree/widgets/add_parents.dart';
+import 'package:family_tree/widgets/add_partner.dart';
+import 'package:family_tree/widgets/add_siblings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:family_tree/data/data.dart';
@@ -16,7 +19,6 @@ class AddRelation extends StatelessWidget {
           const Expanded(child: Text("Add Relation")),
           InkWell(
             onTap: () {
-             
               Navigator.pop(context);
             },
             child: const Icon(Icons.close),
@@ -26,31 +28,58 @@ class AddRelation extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (node.relationData
+              .where((element) => element.relationTypeId == 1)
+              .toList()
+              .isEmpty) ...{
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => BlocProvider(
+                      create: (context) => FamilyTreeBloc(),
+                      child: AddParents(node: node)),
+                );
+              },
+              child: const Text("Add Parents"),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          },
           ElevatedButton(
             onPressed: () {
-
-               showDialog(
+              showDialog(
                 context: context,
-                builder: (context) => BlocProvider(
+                builder: (context) => MultiBlocProvider(providers: [
+                  BlocProvider(
                     create: (context) => FamilyTreeBloc(),
-                    child: AddParents(node: node)),
+                  ),
+                  BlocProvider(
+                    create: (context) => NodeDataBloc(),
+                  )
+                ], child: AddSiblingView(node: node)),
               );
-
             },
-            child: const Text("Add Parents"),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {},
             child: const Text("Add Siblings"),
           ),
           const SizedBox(
             height: 20,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+                showDialog(
+                context: context,
+                builder: (context) => MultiBlocProvider(providers: [
+                  BlocProvider(
+                    create: (context) => FamilyTreeBloc(),
+                  ),
+                  BlocProvider(
+                    create: (context) => NodeDataBloc(),
+                  )
+                ], child: AddPartnerView(node: node)),
+              );
+            },
             child: const Text("Add Partner"),
           ),
           const SizedBox(

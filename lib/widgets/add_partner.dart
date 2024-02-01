@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:family_tree/data/data.dart';
 
-class AddSiblingView extends StatelessWidget {
+class AddPartnerView extends StatelessWidget {
   final Person node;
-  const AddSiblingView({super.key, required this.node});
+  const AddPartnerView({super.key, required this.node});
   @override
   Widget build(BuildContext context) {
     context.read<NodeDataBloc>().add(
@@ -22,8 +22,8 @@ class AddSiblingView extends StatelessWidget {
     TextEditingController nameController = TextEditingController();
     TextEditingController yearOfBirthController = TextEditingController();
     TextEditingController yearOfDeathController = TextEditingController();
-  final familyTreeBloc = context.read<FamilyTreeBloc>();
-                      familyTreeBloc.add(FamilyTreeVisibleNodeLoadingEvent());
+    final familyTreeBloc = context.read<FamilyTreeBloc>();
+    familyTreeBloc.add(FamilyTreeVisibleNodeLoadingEvent());
     return BlocBuilder<NodeDataBloc, NodeDataState>(
       builder: (context, state) {
         return state is NodeDataLoaded
@@ -167,88 +167,17 @@ class AddSiblingView extends StatelessWidget {
                 actions: [
                   ElevatedButton(
                     onPressed: () {
-                    
-                      // context.read<FamilyTreeBloc>().add(
-                      //         UpdateFamilyTreeNodeEvent(
-
-                      //             node: node,
-                      //             name: nameController.text.isNotEmpty
-                      //                 ? nameController.text
-                      //                 : node.name,
-                      //             yearOfDeath: int.tryParse(
-                      //                 yearOfDeathController.text.isNotEmpty
-                      //                     ? yearOfDeathController.text.trim()
-                      //                     : node.yearOfDeath.toString()),
-                      //             yearOfBirth: int.tryParse(
-                      //                 yearOfBirthController.text.isNotEmpty
-                      //                     ? yearOfBirthController.text
-                      //                     : node.yearOfBirth.toString()),
-                      //             gender:
-                      //                 state.gender == Gender.female ? "F" : "M"),
-                      //       );
-                      if (familyTreeBloc.state is FamilyTreeVisibleNodesLoaded) {
-                        if (node.relationData
-                            .any((element) => element.relationTypeId == 1)) {
-                          var parentIds = node.relationData
-                              .where((element) => element.relationTypeId == 1)
-                              .toList()
-                              .map((item) => item.relatedUserId);
-                          if (parentIds.isNotEmpty) {
-                            var parents = parentIds
-                                .map((e) => FamilyTreeBloc
-                                    .nodes
-                                    .firstWhere((element) => element.id == e))
-                                .toList();
-                            if (parents.isNotEmpty) {
-                              context.read<FamilyTreeBloc>().add(
-                                    AddSiblings(
-                                      father: parents.firstWhere(
-                                          (element) => element.gender == "M"),
-                                      mother: parents.firstWhere(
-                                          (element) => element.gender == "F"),
-                                      sibling: Person(
-                                          id: -1,
-                                          level: node.level,
-                                          name: nameController.text.isNotEmpty
-                                              ? nameController.text
-                                              : node.name,
-                                          yearOfDeath: int.tryParse(
-                                              yearOfDeathController
-                                                      .text.isNotEmpty
-                                                  ? yearOfDeathController.text
-                                                      .trim()
-                                                  : node.yearOfDeath
-                                                      .toString()),
-                                          yearOfBirth: int.tryParse(
-                                              yearOfBirthController
-                                                      .text.isNotEmpty
-                                                  ? yearOfBirthController.text
-                                                  : node.yearOfBirth
-                                                      .toString()),
-                                          gender: state.gender == Gender.female
-                                              ? "F"
-                                              : "M",
-                                          relationData: [
-                                            RelationData(
-                                                relatedUserId: parents
-                                                    .firstWhere((element) =>
-                                                        element.gender == "M")
-                                                    .id,
-                                                relationTypeId: 1),
-                                            RelationData(
-                                                relatedUserId: parents
-                                                    .firstWhere((element) =>
-                                                        element.gender == "F")
-                                                    .id,
-                                                relationTypeId: 1)
-                                          ]),
-                                    ),
-                                  );
-                            }
-                          }
-                        }
-                      }
-
+                      context.read<FamilyTreeBloc>().add(AddPartnerNodeEvent(
+                          node: node,
+                          partnerNode: Person(
+                              id: -1,
+                              name: nameController.text,
+                              gender: node.gender == "M" ? "F" : "M",
+                              level: node.level,
+                              relationData: [
+                                RelationData(
+                                    relatedUserId: node.id, relationTypeId: 0)
+                              ])));
                       Navigator.pop(context);
                     },
                     child: const Text("Save"),

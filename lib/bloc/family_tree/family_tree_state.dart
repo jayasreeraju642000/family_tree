@@ -13,14 +13,23 @@ final class FamilyTreeLoading extends FamilyTreeState {
   
 }
 
-final class FamilyTreeLoaded extends FamilyTreeState {
+final class FamilyTreeVisibleNodesLoaded extends FamilyTreeState {
   final List<Person> nodes;
 
   final double viewPortWidth;
   final double viewPortHeight;
 
-  FamilyTreeLoaded(
+  FamilyTreeVisibleNodesLoaded(
       {required this.nodes,
       required this.viewPortHeight,
       required this.viewPortWidth});
+}
+
+
+final class FamilyTreeAllNodesLoaded extends FamilyTreeState {
+  final List<Person> nodes;
+
+
+  FamilyTreeAllNodesLoaded(
+      {required this.nodes,});
 }

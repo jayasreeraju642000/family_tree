@@ -9,13 +9,13 @@ class AddParents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<FamilyTreeBloc>().add(FamilyTreeLoadingEvent());
+    context.read<FamilyTreeBloc>().add(FamilyTreeAllNodeLoadingEvent());
     Person? father;
     Person? mother;
     return BlocConsumer<FamilyTreeBloc, FamilyTreeState>(
       listener: (context, state) {},
       builder: (context, state) {
-        if (state is FamilyTreeLoaded) {
+        if (state is FamilyTreeAllNodesLoaded) {
           return AlertDialog(
             title: Row(
               children: [
@@ -178,7 +178,6 @@ class AddParents extends StatelessWidget {
                       parent.copyWith(
                           id: nodes.length + 1,
                           name: newItem,
-                          
                           relationData: [
                             RelationData(
                               relatedUserId: node.id,
@@ -196,11 +195,14 @@ class AddParents extends StatelessWidget {
   }
 
   void _addNewItem(BuildContext context, Person newItem) {
-    if (context.read<FamilyTreeBloc>().state is FamilyTreeLoaded) {
-      if (!(context.read<FamilyTreeBloc>().state as FamilyTreeLoaded)
+    if (context.read<FamilyTreeBloc>().state is FamilyTreeAllNodesLoaded) {
+      if (!(context.read<FamilyTreeBloc>().state as FamilyTreeAllNodesLoaded)
           .nodes
           .contains(newItem)) {
-        context.read<FamilyTreeBloc>().add(AddFamilyNodeEvent(node: newItem));
+          
+        context
+            .read<FamilyTreeBloc>()
+            .add(AddFamilyNodeEvent(node: newItem, isFromAddParents: true));
         // Future.delayed(const Duration(microseconds: 50));
         // homePageKey.currentContext!
         //     .read<FamilyTreeBloc>()
