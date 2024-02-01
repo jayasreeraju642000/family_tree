@@ -12,6 +12,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   static List<Person> nodes = [];
   static List<Person> activeNodes = [];
   static Map<int, bool> nodeFamiliesExpandedId = {};
+  List<int> directRelativesOfPatient = [];
   List<Person> sampleData =
       sample.map((sampleData) => Person.fromMap(sampleData)).toList();
   List<Person> visitedNodes = [];
@@ -128,15 +129,33 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
           relation.isActive = true;
         }
       } else {
-        var children = event.node.relationData
-            .where((element) => element.relationTypeId == 2)
-            .toList()
-            .map((id) => id.relatedUserId)
-            .toList()
-            .map((child) => nodes.firstWhere((node) => node.id == child))
-            .toList();
-        exansionHidingForChildren(children);
-
+        if (directRelativesOfPatient.contains(event.node.id)) {
+          var parents = event.node.relationData
+              .where((element) => element.relationTypeId == 1)
+              .toList()
+              .map((id) => id.relatedUserId)
+              .toList()
+              .map((child) => nodes.firstWhere((node) => node.id == child))
+              .toList()
+              .first;
+          var children = parents.relationData
+              .where((element) => element.relationTypeId == 2)
+              .toList()
+              .map((id) => id.relatedUserId)
+              .toList()
+              .map((child) => nodes.firstWhere((node) => node.id == child))
+              .toList();
+          exansionHidingForChildren(children);
+        } else {
+          var children = event.node.relationData
+              .where((element) => element.relationTypeId == 2)
+              .toList()
+              .map((id) => id.relatedUserId)
+              .toList()
+              .map((child) => nodes.firstWhere((node) => node.id == child))
+              .toList();
+          exansionHidingForChildren(children);
+        }
         nodes.where((element) => element.isActive).toList().forEach((element) {
           element.isActive = false;
         });
@@ -144,7 +163,19 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       var outputKeys = nodeFamiliesExpandedId.keys
           .where((key) => nodeFamiliesExpandedId[key] == true)
           .toList();
-      print(outputKeys);
+      outputKeys
+          .map((key) => nodes.firstWhere((element) => element.id == key))
+          .toList()
+          .forEach((element) {
+        element.relationData
+            .map((i) => i.relatedUserId)
+            .toList()
+            .map((item) => nodes.firstWhere((node) => node.id == item))
+            .toList()
+            .forEach((relation) {
+          relation.isActive = true;
+        });
+      });
       loadFamilyTree(emit);
     });
 
@@ -374,9 +405,10 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   }
 
   void visibilitySetUp() {
+    directRelativesOfPatient.clear();
     var patient = nodes.firstWhere((element) => element.isPatient);
     patient.isActive = true;
-
+directRelativesOfPatient.add(patient.id);
     var relationIds =
         patient.relationData.map((relation) => relation.relatedUserId).toList();
     var relationNodes = relationIds
@@ -385,6 +417,8 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
         .toList();
     for (var element in relationNodes) {
       element.isActive = true;
+directRelativesOfPatient.add(element.id);
+
     }
   }
 }

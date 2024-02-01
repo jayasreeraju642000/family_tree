@@ -127,6 +127,8 @@ class FamilyTreePainter extends CustomPainter {
               .toList()
               .contains(parentId.relatedUserId)) {
             isParentVisible = true;
+          } else {
+            isParentVisible = false;
           }
         }
         if (isParentVisible) {
