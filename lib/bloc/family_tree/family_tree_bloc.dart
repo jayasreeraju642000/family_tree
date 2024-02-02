@@ -87,7 +87,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       }
       if (!event.mother.relationData
           .any((element) => element.relatedUserId == event.child.id)) {
-        event.father.relationData.add(
+        event.mother.relationData.add(
           RelationData(relatedUserId: event.child.id, relationTypeId: 2),
         );
       }
@@ -190,7 +190,9 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   void exansionHidingForChildren(List<Person> children) {
     for (var child in children) {
       if (nodeFamiliesExpandedId.containsKey(child.id)) {
-        nodeFamiliesExpandedId[child.id] = false;
+        if (!directRelativesOfPatient.contains(child.id)) {
+          nodeFamiliesExpandedId[child.id] = false;
+        }
         var childrensOfChild = child.relationData
             .where((element) => element.relationTypeId == 2)
             .toList()
@@ -408,7 +410,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
     directRelativesOfPatient.clear();
     var patient = nodes.firstWhere((element) => element.isPatient);
     patient.isActive = true;
-directRelativesOfPatient.add(patient.id);
+    directRelativesOfPatient.add(patient.id);
     var relationIds =
         patient.relationData.map((relation) => relation.relatedUserId).toList();
     var relationNodes = relationIds
@@ -417,8 +419,106 @@ directRelativesOfPatient.add(patient.id);
         .toList();
     for (var element in relationNodes) {
       element.isActive = true;
-directRelativesOfPatient.add(element.id);
+      directRelativesOfPatient.add(element.id);
+    }
+    var partner = patient.relationData
+        .where((element) => element.relationTypeId == 0)
+        .toList()
+        .map((item) => item.relatedUserId)
+        .toList();
 
+    for (var i in partner) {
+      if (nodeFamiliesExpandedId.containsKey(i)) {
+        if (nodeFamiliesExpandedId[i] == true) {
+          for (var element in nodes) {
+            if (directRelativesOfPatient.contains(element.id) ||
+                nodes
+                    .firstWhere((node) => node.id == i)
+                    .relationData
+                    .where((relation) => relation.relationTypeId == 1)
+                    .toList()
+                    .map((item) => item.relatedUserId)
+                    .toList()
+                    .contains(element.id)) {
+              element.isActive = true;
+            } else {
+              element.isActive = false;
+            }
+          }
+
+          patient.relationData
+              .where((element) => element.relationTypeId == 1)
+              .toList()
+              .map((item) =>
+                  nodes.firstWhere((node) => node.id == item.relatedUserId))
+              .toList()
+              .forEach((parent) {
+            parent.isActive = false;
+            var children = parent.relationData
+                .where((element) => element.relationTypeId == 2)
+                .toList()
+                .map((item) => item.relatedUserId)
+                .toList();
+            children.removeWhere((element) => element == patient.id);
+
+            children
+                .map((child) => nodes.firstWhere((node) => node.id == child))
+                .toList()
+                .forEach((childNode) {
+              childNode.isActive = false;
+            });
+          });
+        }
+      }
+    }
+    if (nodeFamiliesExpandedId.containsKey(patient.id)) {
+      if (nodeFamiliesExpandedId[patient.id] == true) {
+        for (var i in partner) {
+          if (nodeFamiliesExpandedId.containsKey(i)) {
+            nodeFamiliesExpandedId[i] = false;
+            nodes
+                .firstWhere((node) => node.id == i)
+                .relationData
+                .where((element) => element.relationTypeId == 1)
+                .toList()
+                .map((item) =>
+                    nodes.firstWhere((node) => node.id == item.relatedUserId))
+                .toList()
+                .forEach((parent) {
+              parent.isActive = false;
+            });
+          }
+        }
+        patient.relationData
+            .where((element) => element.relationTypeId == 1)
+            .toList()
+            .map((item) =>
+                nodes.firstWhere((node) => node.id == item.relatedUserId))
+            .toList()
+            .forEach((parent) {
+          parent.isActive = true;
+          var children = parent.relationData
+              .where((element) => element.relationTypeId == 2)
+              .toList()
+              .map((item) => item.relatedUserId)
+              .toList();
+          children.removeWhere((element) => element == patient.id);
+
+          children
+              .map((child) => nodes.firstWhere((node) => node.id == child))
+              .toList()
+              .forEach((childNode) {
+            childNode.isActive = true;
+          });
+        });
+        nodeFamiliesExpandedId.removeWhere((key, value) => key == patient.id);
+      }
+    }
+    if (relationIds
+        .map((r) => nodes.firstWhere((node) => node.id == r))
+        .toList()
+        .every((item) => item.isActive)) {
+      nodeFamiliesExpandedId.removeWhere((key, value) => key == patient.id);
     }
   }
 }

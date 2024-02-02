@@ -1,5 +1,6 @@
 import 'package:family_tree/bloc/family_tree/family_tree_bloc.dart';
 import 'package:family_tree/bloc/node_data/node_data_bloc.dart';
+import 'package:family_tree/widgets/add_childrens.dart';
 import 'package:family_tree/widgets/add_parents.dart';
 import 'package:family_tree/widgets/add_partner.dart';
 import 'package:family_tree/widgets/add_siblings.dart';
@@ -86,7 +87,19 @@ class AddRelation extends StatelessWidget {
             height: 20,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+               showDialog(
+                context: context,
+                builder: (context) => MultiBlocProvider(providers: [
+                  BlocProvider(
+                    create: (context) => FamilyTreeBloc(),
+                  ),
+                  BlocProvider(
+                    create: (context) => NodeDataBloc(),
+                  )
+                ], child: AddChildView(node: node)),
+              );
+            },
             child: const Text("Add Children"),
           )
         ],

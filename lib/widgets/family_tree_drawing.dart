@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:family_tree/data/data.dart';
 
@@ -58,65 +57,158 @@ class FamilyTreePainter extends CustomPainter {
     return false;
   }
 
+  List<String> visitedPairs = [];
+
   @override
   void paint(Canvas canvas, Size size) {
+    visitedPairs.clear();
     for (var node in nodes) {
-      if (node.relationData.any((element) => element.relationTypeId == 0)) {
-        if (nodes.indexWhere((element) =>
-                element.id ==
-                node.relationData
-                    .firstWhere((item) => item.relationTypeId == 0)
-                    .relatedUserId) !=
-            -1) {
-          double partnersXCoordinate = nodes
-              .firstWhere((element) =>
-                  element.id ==
-                  node.relationData
-                      .where((e) => e.relationTypeId == 0)
-                      .first
-                      .relatedUserId)
-              .xCoordinate;
-          var firstXCoordinate = (((node.xCoordinate) > partnersXCoordinate)
-                  ? partnersXCoordinate
-                  : (node.xCoordinate)) +
-              nodeWidth;
-          var secondXCoordinate = ((node.xCoordinate) < partnersXCoordinate)
-              ? partnersXCoordinate
-              : (node.xCoordinate);
-          canvas.drawLine(
-              Offset(firstXCoordinate, (node.yCoordinates) + nodeHeight / 2),
-              Offset(secondXCoordinate, (node.yCoordinates) + nodeHeight / 2),
-              Paint()
-                ..color = Colors.grey
-                ..strokeWidth = 1);
+      // draw line to partner
+      partnerDrawing(node, canvas);
+      childVerticlLineDrawing(node,canvas);
+    }
+  }
 
-          if (node.relationData.map((e) => e.relationTypeId).contains(2)) {
-            canvas.drawLine(
-                Offset(((firstXCoordinate + secondXCoordinate) / 2),
-                    (node.yCoordinates) + nodeHeight / 2),
-                Offset(((firstXCoordinate + secondXCoordinate) / 2),
-                    ((node.yCoordinates) + verticalGap) - nodeHeight / 2),
-                Paint()
-                  ..color = Colors.grey
-                  ..strokeWidth = 1);
+  void partnerDrawing(Person node, Canvas canvas) {
+    var partnerId = node.relationData
+        .where((element) => element.relationTypeId == 0)
+        .toList()
+        .map((p) => p.relatedUserId)
+        .toList();
+    for (var partner in partnerId) {
+      if (nodes.map((item) => item.id).toList().contains(partner)) {
+        var partnerNode = nodes.firstWhere((element) => element.id == partner);
+        double firstXCoordinate = node.xCoordinate;
+        double secondXCoordinate = partnerNode.xCoordinate;
+        var partnerList = [node.id, partnerNode.id];
+        partnerList.sort(
+          (a, b) => a.compareTo(b),
+        );
+        if (visitedPairs.contains(partnerList.toString())) {
+          continue;
+        } else {
+          visitedPairs.add(partnerList.toString());
+        }
+
+        double xCoordinate = firstXCoordinate < secondXCoordinate
+            ? firstXCoordinate
+            : secondXCoordinate;
+        canvas.drawLine(
+            Offset(xCoordinate + nodeWidth, node.yCoordinates + nodeHeight / 2),
+            Offset(xCoordinate + nodeWidth + horizontalGap,
+                partnerNode.yCoordinates + nodeHeight / 2),
+            Paint()
+              ..color = Colors.grey
+              ..strokeWidth = 1);
+        // check for the common children is visible and draw line from center
+
+        checkForAnyChildIsVisible(node, partnerNode, canvas);
+      }
+    }
+  }
+
+  void checkForAnyChildIsVisible(
+      Person node, Person partnerNode, Canvas canvas) {
+    var childrenIdsOfNode = node.relationData
+        .where((element) => element.relationTypeId == 2)
+        .map((e) => e.relatedUserId)
+        .toList();
+    var childrenIdsOfPartner = partnerNode.relationData
+        .where((element) => element.relationTypeId == 2)
+        .map((e) => e.relatedUserId)
+        .toList();
+    var commonChildren = childrenIdsOfNode
+        .where((element) => childrenIdsOfPartner.contains(element))
+        .toList();
+    bool anyChildVisible = false;
+    for (var child in commonChildren) {
+      if (nodes.map((item) => item.id).toList().contains(child)) {
+        anyChildVisible = true;
+        break;
+      }
+    }
+    if (anyChildVisible) {
+      double firstXCoordinate = node.xCoordinate;
+      double secondXCoordinate = partnerNode.xCoordinate;
+      double xCoordinate = (firstXCoordinate < secondXCoordinate
+              ? firstXCoordinate
+              : secondXCoordinate) +
+          nodeWidth +
+          horizontalGap / 2;
+      canvas.drawLine(
+        Offset(xCoordinate, node.yCoordinates + nodeHeight / 2),
+        Offset(xCoordinate,
+            partnerNode.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+        Paint()
+          ..color = Colors.grey
+          ..strokeWidth = 1,
+      );
+    }
+
+    if (commonChildren.isNotEmpty)
+// if only have one child
+    {
+      if (commonChildren.length == 1) {
+        drawHorizontalLineToSingleChild(
+            commonChildren, node, partnerNode, canvas);
+      } else {
+        List<Person> children = [];
+        for (var child in commonChildren) {
+          if (nodes.map((item) => item.id).toList().contains(child)) {
+            children.add(nodes.firstWhere((element) => element.id == child));
           }
         }
-      }
 
-      if (!node.relationData.any((element) => element.relationTypeId == 0)) {
-        if (node.relationData.any((element) => element.relationTypeId == 2)) {
-          canvas.drawLine(
-              Offset(((node.xCoordinate)) + horizontalGap,
-                  (node.yCoordinates) + nodeHeight / 2),
-              Offset(((node.xCoordinate)) + horizontalGap,
-                  ((node.yCoordinates) + verticalGap) - nodeHeight / 2),
-              Paint()
-                ..color = Colors.grey
-                ..strokeWidth = 1);
+        double leftMostChildXcoordinate = children.first.xCoordinate;
+        double rightMostChildXcoordinate = children.first.xCoordinate;
+
+        for (var child in children) {
+          if (leftMostChildXcoordinate > child.xCoordinate) {
+            leftMostChildXcoordinate = child.xCoordinate;
+          }
+
+          if (rightMostChildXcoordinate < child.xCoordinate) {
+            rightMostChildXcoordinate = child.xCoordinate;
+          }
         }
+        canvas.drawLine(
+          Offset(leftMostChildXcoordinate + nodeWidth / 2,
+              node.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+          Offset(rightMostChildXcoordinate + nodeWidth / 2,
+              partnerNode.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+          Paint()
+            ..color = Colors.grey
+            ..strokeWidth = 1,
+        );
       }
+    }
+  }
 
-      if (node.relationData.any((element) => element.relationTypeId == 1)) {
+  void drawHorizontalLineToSingleChild(List<int> commonChildren, Person node,
+      Person partnerNode, Canvas canvas) {
+    var child =
+        nodes.firstWhere((element) => element.id == commonChildren.first);
+    double firstXCoordinate = node.xCoordinate;
+    double secondXCoordinate = partnerNode.xCoordinate;
+    double xCoordinate = (firstXCoordinate < secondXCoordinate
+            ? firstXCoordinate
+            : secondXCoordinate) +
+        nodeWidth +
+        horizontalGap / 2;
+
+    double childXcoordinate = child.xCoordinate + nodeWidth / 2;
+    canvas.drawLine(
+      Offset(xCoordinate, node.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+      Offset(childXcoordinate,
+          partnerNode.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+      Paint()
+        ..color = Colors.grey
+        ..strokeWidth = 1,
+    );
+  }
+  
+  void childVerticlLineDrawing(Person node, Canvas canvas) {
+     if (node.relationData.any((element) => element.relationTypeId == 1)) {
         var parentIds = node.relationData
             .where((element) => element.relationTypeId == 1)
             .toList();
@@ -143,111 +235,5 @@ class FamilyTreePainter extends CustomPainter {
           );
         }
       }
-      List<Person> nodesWithSameParents = [];
-
-      nodes
-          .where((element) => element.level == node.level)
-          .toList()
-          .forEach((element) {
-        List<int> currentNodeParent = node.relationData
-            .where((f) => f.relationTypeId == 1)
-            .toList()
-            .map((e) => e.relatedUserId)
-            .toList();
-        List<int> elementParents = element.relationData
-            .where((e) => e.relationTypeId == 1)
-            .toList()
-            .map((e) => e.relatedUserId)
-            .toList();
-        if (!identical(element, node)) {
-          if (listEquals(currentNodeParent, elementParents)) {
-            nodesWithSameParents.add(element);
-          }
-        }
-      });
-
-      double leftMostNodeCenterXCordinate = node.xCoordinate;
-      double rightMostNodeCenterXCordinate = node.xCoordinate;
-      if (node.relationData.any(
-        (element) => element.relationTypeId == 0,
-      )) {
-        var partnerList = node.relationData
-            .where(
-              (element) => element.relationTypeId == 0,
-            )
-            .toList();
-
-        for (var partner in partnerList) {
-          var childrenIdsOfNode = node.relationData
-              .where((element) => element.relationTypeId == 2)
-              .map((e) => e.relatedUserId)
-              .toList();
-          if (nodes.indexWhere(
-                  (element) => element.id == partner.relatedUserId) !=
-              -1) {
-            var partnerNode = nodes
-                .firstWhere((element) => element.id == partner.relatedUserId);
-
-            var childrenIdsOfPartner = partnerNode.relationData
-                .where((element) => element.relationTypeId == 2)
-                .map((e) => e.relatedUserId)
-                .toList();
-            var commonChildren = childrenIdsOfNode
-                .where((element) => childrenIdsOfPartner.contains(element))
-                .toList();
-            List<Person> childrenNodes = [];
-            for (var child in commonChildren) {
-              if (nodes.indexWhere((element) => element.id == child) != -1) {
-                childrenNodes
-                    .add(nodes.firstWhere((element) => element.id == child));
-              }
-            }
-            if (childrenNodes.isNotEmpty) {
-              if (commonChildren.length > 1) {
-                childrenNodes.sort(
-                  (a, b) => a.xCoordinate.compareTo(b.xCoordinate),
-                );
-                leftMostNodeCenterXCordinate =
-                    childrenNodes.first.xCoordinate + (nodeWidth) / 2;
-                rightMostNodeCenterXCordinate =
-                    childrenNodes.last.xCoordinate - (nodeWidth) / 2;
-
-                if (leftMostNodeCenterXCordinate !=
-                    rightMostNodeCenterXCordinate) {
-                  canvas.drawLine(
-                      Offset(leftMostNodeCenterXCordinate,
-                          (node.yCoordinates + verticalGap / 4 + nodeHeight)),
-                      Offset(
-                          rightMostNodeCenterXCordinate +
-                              (nodeWidth / 2 + horizontalGap),
-                          (node.yCoordinates + verticalGap / 4 + nodeHeight)),
-                      Paint()
-                        ..color = Colors.grey
-                        ..strokeWidth = 1);
-                }
-              } else {
-                canvas.drawLine(
-                    Offset(
-                        (node.xCoordinate < partnerNode.xCoordinate
-                                ? node.xCoordinate
-                                : partnerNode.xCoordinate) +
-                            nodeWidth / 2,
-                        (node.yCoordinates + verticalGap / 4 + nodeHeight)),
-                    Offset(
-                        (node.xCoordinate < partnerNode.xCoordinate
-                                ? node.xCoordinate
-                                : partnerNode.xCoordinate) +
-                            nodeWidth +
-                            horizontalGap / 2,
-                        (node.yCoordinates + verticalGap / 4 + nodeHeight)),
-                    Paint()
-                      ..color = Colors.grey
-                      ..strokeWidth = 1);
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }

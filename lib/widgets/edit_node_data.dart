@@ -23,7 +23,8 @@ class EditNodeData extends StatelessWidget {
     TextEditingController yearOfBirthController = TextEditingController();
     TextEditingController yearOfDeathController = TextEditingController();
 
-    return BlocBuilder<NodeDataBloc, NodeDataState>(
+    return
+     BlocBuilder<NodeDataBloc, NodeDataState>(
       builder: (context, state) {
         return state is NodeDataLoaded
             ? AlertDialog(
