@@ -39,8 +39,8 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
     on<UpdateFamilyTreeNodeEvent>((event, emit) {
       emit(FamilyTreeLoading());
       event.node.name = event.name ?? event.node.name;
-      event.node.yearOfBirth = event.yearOfBirth;
-      event.node.yearOfDeath = event.yearOfDeath;
+      event.node.dateOfBirth = event.dateOfBirth;
+      event.node.dateOfDeath = event.dateOfDeath;
       event.node.gender = event.gender ?? event.node.gender;
       emit(
         FamilyTreeVisibleNodesLoaded(
@@ -184,6 +184,29 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       nodes.add(partner);
       event.node.relationData
           .add(RelationData(relatedUserId: partner.id, relationTypeId: 0));
+      loadFamilyTree(emit);
+    });
+
+    on<AddChildrenEvent>((event, emit) {
+      emit(FamilyTreeLoading());
+
+      nodes.add(event.child.copyWith(id: nodes.length + 1));
+
+      event.partner.relationData.add(
+          RelationData(relatedUserId: nodes.length , relationTypeId: 2));
+      event.node.relationData.add(
+          RelationData(relatedUserId: nodes.length, relationTypeId: 2));
+      if (!event.node.relationData
+          .any((element) => element.relatedUserId == event.partner.id)) {
+        event.node.relationData.add(
+            RelationData(relatedUserId: event.partner.id, relationTypeId: 0));
+      }
+      if (!event.partner.relationData
+          .any((element) => element.relatedUserId == event.node.id)) {
+        event.partner.relationData
+            .add(RelationData(relatedUserId: event.node.id, relationTypeId: 0));
+      }
+      loadFamilyTree(emit);
     });
   }
 

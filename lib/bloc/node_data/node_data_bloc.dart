@@ -14,8 +14,8 @@ class NodeDataBloc extends Bloc<NodeDataEvent, NodeDataState> {
           NodeDataLoaded(
             gender: event.gender,
             name: event.name,
-            yearOfBirth: event.yearOfBirth,
-            yearOfDeath: event.yearOfDeath,
+            dateOfBirth: event.dateOfBirth,
+            dateOfDeath: event.dateOfDeath,
           ),
         );
       },
@@ -26,8 +26,8 @@ class NodeDataBloc extends Bloc<NodeDataEvent, NodeDataState> {
           NodeDataLoaded(
             gender: event.gender,
             name: event.name,
-            yearOfBirth: event.yearOfBirth,
-            yearOfDeath: event.yearOfDeath,
+            dateOfBirth: event.dateOfBirth,
+            dateOfDeath: event.dateOfDeath,
           ),
         );
       },

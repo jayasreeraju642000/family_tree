@@ -11,14 +11,14 @@ final class UpdateFamilyTreeNodeEvent extends FamilyTreeEvent {
   final Person node;
   final String? name;
   final String? gender;
-  final int? yearOfBirth;
-  final int? yearOfDeath;
+  final String? dateOfBirth;
+  final String? dateOfDeath;
   UpdateFamilyTreeNodeEvent({
     required this.node,
     this.gender,
     this.name,
-    this.yearOfBirth,
-    this.yearOfDeath,
+    this.dateOfBirth,
+    this.dateOfDeath,
   });
 }
 

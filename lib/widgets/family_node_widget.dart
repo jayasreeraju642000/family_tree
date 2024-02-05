@@ -66,7 +66,7 @@ class FamilyNodeWidget extends StatelessWidget {
                       },
                       const Spacer(),
                       Text(
-                        '${node.yearOfBirth ?? 'NA'} - ${node.yearOfDeath ?? 'NA'}',
+                        '${(node.dateOfBirth ?? 'NA').split('-').last} - ${(node.dateOfDeath ?? 'NA').split('-').last}',
                         style: const TextStyle(fontSize: 9),
                       ),
                       const SizedBox(
@@ -140,10 +140,14 @@ class FamilyNodeWidget extends StatelessWidget {
                                 Icon(
                                   node.gender == "F"
                                       ? Icons.female
-                                      : Icons.male,
+                                      : node.gender == "M"
+                                          ? Icons.male
+                                          : Icons.transgender,
                                   color: node.gender == "F"
                                       ? Colors.pink
-                                      : Colors.blue,
+                                      : node.gender == "M"
+                                          ? Colors.blue
+                                          : Colors.purple,
                                   size: heightOfNode / 2,
                                 ),
                                 const SizedBox(

@@ -11,12 +11,12 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "John Doe",
     "level": 0,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M",
     "isPatient": true
   },
-   {
+  {
     "id": 4,
     "relationData": [
       {"relatedUserId": 5, "relationTypeId": 0},
@@ -25,12 +25,11 @@ List<Map<String, dynamic>> sample = [
       {"relatedUserId": 8, "relationTypeId": 2},
       {"relatedUserId": 9, "relationTypeId": 2},
       {"relatedUserId": 2, "relationTypeId": 2},
-
     ],
     "name": "Daniel",
     "level": -2,
-    "yearOfBirth": 1931,
-    "yearOfDeath": 2013,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -42,29 +41,12 @@ List<Map<String, dynamic>> sample = [
       {"relatedUserId": 8, "relationTypeId": 2},
       {"relatedUserId": 9, "relationTypeId": 2},
       {"relatedUserId": 2, "relationTypeId": 2},
-
     ],
     "name": "Dorothy",
     "level": -2,
-    "yearOfBirth": 1941,
-    "yearOfDeath": 2015,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
-  },
-  {
-    "id": 6,
-    "relationData": [
-      {"relatedUserId": 4, "relationTypeId": 1},
-      {"relatedUserId": 5, "relationTypeId": 1},
-      {"relatedUserId": 10, "relationTypeId": 0},
-      {"relatedUserId": 12, "relationTypeId": 2},
-      {"relatedUserId": 16, "relationTypeId": 2},
-      // {"relatedUserId": 37, "relationTypeId": 2},
-    ],
-    "name": "Damien Martin",
-    "level": -1,
-    "yearOfBirth": 1967,
-    "yearOfDeath": null,
-    "gender": "M"
   },
   {
     "id": 7,
@@ -77,8 +59,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Christopher",
     "level": -1,
-    "yearOfBirth": 1971,
-    "yearOfDeath": 2,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -89,8 +71,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Isabella",
     "level": -1,
-    "yearOfBirth": 1963,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -101,8 +83,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Clara",
     "level": -1,
-    "yearOfBirth": 1961,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -115,8 +97,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Emily",
     "level": -1,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -129,8 +111,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Martina Thomas",
     "level": 0,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -141,8 +123,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Matthew",
     "level": 0,
-    "yearOfBirth": 1967,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -156,8 +138,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Charles",
     "level": 1,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -171,8 +153,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Josephine",
     "level": 1,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -184,8 +166,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Donald",
     "level": 1,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -196,8 +178,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Steven",
     "level": 0,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -209,8 +191,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Carol",
     "level": 0,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -220,8 +202,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Kevin",
     "level": 0,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -232,8 +214,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "James",
     "level": 2,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -247,8 +229,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Robert",
     "level": 2,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -260,8 +242,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Elizabeth",
     "level": 2,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -273,8 +255,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Daisy",
     "level": -1,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -285,8 +267,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Margaret",
     "level": 0,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -299,8 +281,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Rosa",
     "level": 3,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -311,8 +293,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "George",
     "level": 3,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -325,12 +307,11 @@ List<Map<String, dynamic>> sample = [
       {"relatedUserId": 29, "relationTypeId": 2},
       {"relatedUserId": 50, "relationTypeId": 2},
       {"relatedUserId": 51, "relationTypeId": 2},
-
     ],
     "name": "Nicholas",
     "level": 4,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -341,12 +322,11 @@ List<Map<String, dynamic>> sample = [
       {"relatedUserId": 29, "relationTypeId": 2},
       {"relatedUserId": 50, "relationTypeId": 2},
       {"relatedUserId": 51, "relationTypeId": 2},
-
     ],
     "name": "Valentina",
     "level": 4,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -357,8 +337,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Matilda",
     "level": 5,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -370,8 +350,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Luna",
     "level": 5,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -383,8 +363,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Lisa",
     "level": 1,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -394,8 +374,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Rony",
     "level": 1,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -407,8 +387,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Maagie",
     "level": 1,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -419,8 +399,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Sarah",
     "level": 2,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -432,8 +412,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Anna",
     "level": 2,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -443,8 +423,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Cristo",
     "level": 2,
-    "yearOfBirth": 2000,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -455,8 +435,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Susan",
     "level": 3,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -471,8 +451,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Maria",
     "level": 0,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -485,8 +465,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Sojan",
     "level": 0,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -501,8 +481,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Sohan",
     "level": 1,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -515,8 +495,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Soumya",
     "level": 1,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -527,8 +507,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Neethu",
     "level": 2,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -539,8 +519,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Neenu",
     "level": 2,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -551,8 +531,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Meenu",
     "level": 2,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -566,8 +546,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Joy",
     "level": 1,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -578,8 +558,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Sathya",
     "level": 1,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -591,8 +571,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Anjana",
     "level": 1,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -603,8 +583,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Akhila",
     "level": 2,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -615,8 +595,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Akhitha",
     "level": 2,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -627,8 +607,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Christo",
     "level": 5,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -639,8 +619,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Liya",
     "level": 5,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -651,13 +631,11 @@ List<Map<String, dynamic>> sample = [
       {"relatedUserId": 52, "relationTypeId": 0},
       {"relatedUserId": 53, "relationTypeId": 2},
       {"relatedUserId": 54, "relationTypeId": 2},
-
-
     ],
     "name": "Noyal",
     "level": 5,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
   {
@@ -666,12 +644,11 @@ List<Map<String, dynamic>> sample = [
       {"relatedUserId": 51, "relationTypeId": 0},
       {"relatedUserId": 53, "relationTypeId": 2},
       {"relatedUserId": 54, "relationTypeId": 2},
-
     ],
     "name": "Sneha",
     "level": 5,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -679,12 +656,11 @@ List<Map<String, dynamic>> sample = [
     "relationData": [
       {"relatedUserId": 51, "relationTypeId": 1},
       {"relatedUserId": 52, "relationTypeId": 1},
-
     ],
     "name": "Nimmy",
     "level": 6,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -692,15 +668,14 @@ List<Map<String, dynamic>> sample = [
     "relationData": [
       {"relatedUserId": 51, "relationTypeId": 1},
       {"relatedUserId": 52, "relationTypeId": 1},
-
     ],
     "name": "Nima",
     "level": 6,
-    "yearOfBirth": 1959,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
-    {
+  {
     "id": 3,
     "relationData": [
       {"relatedUserId": 1, "relationTypeId": 2},
@@ -709,8 +684,8 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Caroline Mayers",
     "level": -1,
-    "yearOfBirth": 1965,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "F"
   },
   {
@@ -724,10 +699,24 @@ List<Map<String, dynamic>> sample = [
     ],
     "name": "Tom Hendrickes",
     "level": -1,
-    "yearOfBirth": 1967,
-    "yearOfDeath": null,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
     "gender": "M"
   },
-
- 
+  {
+    "id": 6,
+    "relationData": [
+      {"relatedUserId": 4, "relationTypeId": 1},
+      {"relatedUserId": 5, "relationTypeId": 1},
+      {"relatedUserId": 10, "relationTypeId": 0},
+      {"relatedUserId": 12, "relationTypeId": 2},
+      {"relatedUserId": 16, "relationTypeId": 2},
+      // {"relatedUserId": 37, "relationTypeId": 2},
+    ],
+    "name": "Damien Martin",
+    "level": -1,
+    "dateOfBirth": "12-12-2000",
+    "dateOfDeath": "12-12-2000",
+    "gender": "M"
+  },
 ];

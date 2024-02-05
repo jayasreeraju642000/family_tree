@@ -14,16 +14,16 @@ class AddSiblingView extends StatelessWidget {
     context.read<NodeDataBloc>().add(
           LoadData(
             gender: node.gender == "M" ? Gender.male : Gender.female,
-            name: node.name,
-            yearOfBirth: node.yearOfBirth,
-            yearOfDeath: node.yearOfDeath,
+            name: '',
+            dateOfBirth: '',
+            dateOfDeath: '',
           ),
         );
     TextEditingController nameController = TextEditingController();
-    TextEditingController yearOfBirthController = TextEditingController();
-    TextEditingController yearOfDeathController = TextEditingController();
-  final familyTreeBloc = context.read<FamilyTreeBloc>();
-                      familyTreeBloc.add(FamilyTreeVisibleNodeLoadingEvent());
+    TextEditingController dateOfBirthController = TextEditingController();
+    TextEditingController dateOfDeathController = TextEditingController();
+    final familyTreeBloc = context.read<FamilyTreeBloc>();
+    familyTreeBloc.add(FamilyTreeVisibleNodeLoadingEvent());
     return BlocBuilder<NodeDataBloc, NodeDataState>(
       builder: (context, state) {
         return state is NodeDataLoaded
@@ -50,14 +50,22 @@ class AddSiblingView extends StatelessWidget {
                       Row(children: [
                         Expanded(
                           child: TextField(
-                            controller: yearOfBirthController,
+                            controller: dateOfBirthController
+                              ..text = state.dateOfBirth == null
+                                  ? ''
+                                  : state.dateOfBirth.toString(),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
                               label: const Text(
-                                "Year of Birth",
+                                "Date of Birth",
                                 style: TextStyle(fontSize: 12),
                               ),
+                              suffixIcon: InkWell(
+                                  onTap: () =>
+                                      _showDatePicker(context, true, state),
+                                  child: const Icon(Icons.calendar_month)),
+                              hintText: "dd-MM-yyyy",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(
                                   8,
@@ -71,16 +79,22 @@ class AddSiblingView extends StatelessWidget {
                         ),
                         Expanded(
                           child: TextField(
-                            controller: yearOfDeathController,
+                            controller: dateOfDeathController
+                              ..text = state.dateOfDeath == null
+                                  ? ''
+                                  : state.dateOfDeath.toString(),
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
+                              suffixIcon: InkWell(
+                                  onTap: () =>
+                                      _showDatePicker(context, false, state),
+                                  child: const Icon(Icons.calendar_month)),
                               label: const Text(
-                                "Year of death",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
+                                "Date of death",
+                                style: TextStyle(fontSize: 12),
                               ),
+                              hintText: "dd-MM-yyyy",
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(
                                   8,
@@ -105,22 +119,11 @@ class AddSiblingView extends StatelessWidget {
                                   context.read<NodeDataBloc>().add(
                                         ChangeData(
                                           gender: value!,
-                                          name: nameController.text.isNotEmpty
-                                              ? nameController.text
-                                              : node.name,
-                                          yearOfDeath: int.tryParse(
-                                              yearOfDeathController
-                                                      .text.isNotEmpty
-                                                  ? yearOfDeathController.text
-                                                      .trim()
-                                                  : node.yearOfDeath
-                                                      .toString()),
-                                          yearOfBirth: int.tryParse(
-                                            yearOfBirthController
-                                                    .text.isNotEmpty
-                                                ? yearOfBirthController.text
-                                                : node.yearOfBirth.toString(),
-                                          ),
+                                          name: nameController.text,
+                                          dateOfDeath:
+                                              dateOfDeathController.text,
+                                          dateOfBirth:
+                                              dateOfBirthController.text,
                                         ),
                                       );
                                 },
@@ -137,22 +140,32 @@ class AddSiblingView extends StatelessWidget {
                                   context.read<NodeDataBloc>().add(
                                         ChangeData(
                                           gender: value!,
-                                          name: nameController.text.isNotEmpty
-                                              ? nameController.text
-                                              : node.name,
-                                          yearOfDeath: int.tryParse(
-                                            yearOfDeathController
-                                                    .text.isNotEmpty
-                                                ? yearOfDeathController.text
-                                                    .trim()
-                                                : node.yearOfDeath.toString(),
-                                          ),
-                                          yearOfBirth: int.tryParse(
-                                            yearOfBirthController
-                                                    .text.isNotEmpty
-                                                ? yearOfBirthController.text
-                                                : node.yearOfBirth.toString(),
-                                          ),
+                                          name: nameController.text,
+                                          dateOfDeath:
+                                              dateOfDeathController.text,
+                                          dateOfBirth:
+                                              dateOfBirthController.text,
+                                        ),
+                                      );
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: ListTile(
+                              title: const Text('Others'),
+                              leading: Radio<Gender>(
+                                value: Gender.other,
+                                groupValue: state.gender,
+                                onChanged: (Gender? value) {
+                                  context.read<NodeDataBloc>().add(
+                                        ChangeData(
+                                          gender: value!,
+                                          name: nameController.text,
+                                          dateOfDeath:
+                                              (dateOfDeathController.text),
+                                          dateOfBirth:
+                                              (dateOfBirthController.text),
                                         ),
                                       );
                                 },
@@ -167,7 +180,6 @@ class AddSiblingView extends StatelessWidget {
                 actions: [
                   ElevatedButton(
                     onPressed: () {
-                    
                       // context.read<FamilyTreeBloc>().add(
                       //         UpdateFamilyTreeNodeEvent(
 
@@ -175,18 +187,19 @@ class AddSiblingView extends StatelessWidget {
                       //             name: nameController.text.isNotEmpty
                       //                 ? nameController.text
                       //                 : node.name,
-                      //             yearOfDeath: int.tryParse(
-                      //                 yearOfDeathController.text.isNotEmpty
-                      //                     ? yearOfDeathController.text.trim()
-                      //                     : node.yearOfDeath.toString()),
-                      //             yearOfBirth: int.tryParse(
-                      //                 yearOfBirthController.text.isNotEmpty
-                      //                     ? yearOfBirthController.text
-                      //                     : node.yearOfBirth.toString()),
+                      //             dateOfDeath: int.tryParse(
+                      //                 dateOfDeathController.text.isNotEmpty
+                      //                     ? dateOfDeathController.text.trim()
+                      //                     : node.dateOfDeath.toString()),
+                      //             dateOfBirth: int.tryParse(
+                      //                 dateOfBirthController.text.isNotEmpty
+                      //                     ? dateOfBirthController.text
+                      //                     : node.dateOfBirth.toString()),
                       //             gender:
                       //                 state.gender == Gender.female ? "F" : "M"),
                       //       );
-                      if (familyTreeBloc.state is FamilyTreeVisibleNodesLoaded) {
+                      if (familyTreeBloc.state
+                          is FamilyTreeVisibleNodesLoaded) {
                         if (node.relationData
                             .any((element) => element.relationTypeId == 1)) {
                           var parentIds = node.relationData
@@ -195,8 +208,7 @@ class AddSiblingView extends StatelessWidget {
                               .map((item) => item.relatedUserId);
                           if (parentIds.isNotEmpty) {
                             var parents = parentIds
-                                .map((e) => FamilyTreeBloc
-                                    .nodes
+                                .map((e) => FamilyTreeBloc.nodes
                                     .firstWhere((element) => element.id == e))
                                 .toList();
                             if (parents.isNotEmpty) {
@@ -209,25 +221,16 @@ class AddSiblingView extends StatelessWidget {
                                       sibling: Person(
                                           id: -1,
                                           level: node.level,
-                                          name: nameController.text.isNotEmpty
-                                              ? nameController.text
-                                              : node.name,
-                                          yearOfDeath: int.tryParse(
-                                              yearOfDeathController
-                                                      .text.isNotEmpty
-                                                  ? yearOfDeathController.text
-                                                      .trim()
-                                                  : node.yearOfDeath
-                                                      .toString()),
-                                          yearOfBirth: int.tryParse(
-                                              yearOfBirthController
-                                                      .text.isNotEmpty
-                                                  ? yearOfBirthController.text
-                                                  : node.yearOfBirth
-                                                      .toString()),
+                                          name: nameController.text,
+                                          dateOfDeath:
+                                              dateOfDeathController.text.trim(),
+                                          dateOfBirth:
+                                              dateOfBirthController.text.trim(),
                                           gender: state.gender == Gender.female
                                               ? "F"
-                                              : "M",
+                                              : state.gender == Gender.male
+                                                  ? "M"
+                                                  : "O",
                                           relationData: [
                                             RelationData(
                                                 relatedUserId: parents
@@ -260,5 +263,30 @@ class AddSiblingView extends StatelessWidget {
               );
       },
     );
+  }
+
+  void _showDatePicker(
+      BuildContext context, bool isDateOfBirth, NodeDataLoaded state) async {
+    var dateTime = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1000),
+      lastDate: DateTime(4000),
+      onDatePickerModeChange: (value) {},
+    );
+    if (dateTime != null) {
+      String formattedDate =
+          "${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year.toString()}";
+      if (context.mounted) {
+        context.read<NodeDataBloc>().add(
+              ChangeData(
+                gender: state.gender ?? Gender.male,
+                name: state.name ?? "",
+                dateOfDeath: !isDateOfBirth ? formattedDate : state.dateOfDeath,
+                dateOfBirth: isDateOfBirth ? formattedDate : state.dateOfBirth,
+              ),
+            );
+      }
+    }
   }
 }

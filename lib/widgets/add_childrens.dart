@@ -16,11 +16,15 @@ class AddChildView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<FamilyTreeBloc>().add(FamilyTreeAllNodeLoadingEvent());
+    context.read<NodeDataBloc>().add(LoadData(
+          gender: Gender.male,
+          name: '',
+        ));
     Person? partner;
 
     TextEditingController nameController = TextEditingController();
-    TextEditingController yearOfBirthController = TextEditingController();
-    TextEditingController yearOfDeathController = TextEditingController();
+    TextEditingController dateOfBirthController = TextEditingController();
+    TextEditingController dateOfDeathController = TextEditingController();
     return BlocConsumer<FamilyTreeBloc, FamilyTreeState>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -43,7 +47,7 @@ class AddChildView extends StatelessWidget {
                 DropdownButtonFormField<Person>(
                   value: partner,
                   decoration: InputDecoration(
-                      label: const Text("Name of Father: "),
+                      label: const Text("Name of Partner: "),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       border: OutlineInputBorder(
@@ -59,8 +63,8 @@ class AddChildView extends StatelessWidget {
                   },
                   items: state.nodes
                       .where((element) =>
-                          element.level == node.level - 1 &&
-                          element.gender == "M")
+                          element.level == node.level &&
+                          element.gender == (node.gender == "F" ? "M" : "F"))
                       .toList()
                       .map(
                         (e) => DropdownMenuItem<Person>(
@@ -71,16 +75,19 @@ class AddChildView extends StatelessWidget {
                       .toList()
                     ..add(DropdownMenuItem(
                       value: Person(
-                          id: -1,
-                          name: '',
-                          gender: node.gender == "M" ? "F" : "M",
-                          level: node.level,
-                          xCoordinate: node.xCoordinate,
-                          yCoordinates: node.yCoordinates - state.verticalGap,
-                          relationData: [
-                            RelationData(
-                                relatedUserId: node.id, relationTypeId: 2)
-                          ]),
+                        id: -1,
+                        name: '',
+                        gender: node.gender == "M" ? "F" : "M",
+                        level: node.level,
+                        xCoordinate: node.xCoordinate,
+                        yCoordinates: node.yCoordinates - state.verticalGap,
+                        relationData: [
+                          RelationData(
+                            relatedUserId: node.id,
+                            relationTypeId: 2,
+                          )
+                        ],
+                      ),
                       child: const Text("Add New..."),
                     )),
                 ),
@@ -110,10 +117,10 @@ class AddChildView extends StatelessWidget {
                           Row(children: [
                             Expanded(
                               child: TextField(
-                                controller: yearOfBirthController
-                                  ..text = state.yearOfBirth == null
+                                controller: dateOfBirthController
+                                  ..text = state.dateOfBirth == null
                                       ? ''
-                                      : state.yearOfBirth.toString(),
+                                      : state.dateOfBirth.toString(),
                                 decoration: InputDecoration(
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 5),
@@ -131,10 +138,10 @@ class AddChildView extends StatelessWidget {
                             ),
                             Expanded(
                               child: TextField(
-                                controller: yearOfDeathController
-                                  ..text = state.yearOfDeath == null
+                                controller: dateOfDeathController
+                                  ..text = state.dateOfDeath == null
                                       ? ''
-                                      : state.yearOfDeath.toString(),
+                                      : state.dateOfDeath.toString(),
                                 decoration: InputDecoration(
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 5),
@@ -163,26 +170,11 @@ class AddChildView extends StatelessWidget {
                                       context.read<NodeDataBloc>().add(
                                             ChangeData(
                                               gender: value!,
-                                              name:
-                                                  nameController.text.isNotEmpty
-                                                      ? nameController.text
-                                                      : node.name,
-                                              yearOfDeath:
-                                                  int.tryParse(
-                                                      yearOfDeathController
-                                                              .text.isNotEmpty
-                                                          ? yearOfDeathController
-                                                              .text
-                                                              .trim()
-                                                          : node.yearOfDeath
-                                                              .toString()),
-                                              yearOfBirth: int.tryParse(
-                                                  yearOfBirthController
-                                                          .text.isNotEmpty
-                                                      ? yearOfBirthController
-                                                          .text
-                                                      : node.yearOfBirth
-                                                          .toString()),
+                                              name: nameController.text,
+                                              dateOfDeath:
+                                                  dateOfDeathController.text,
+                                              dateOfBirth:
+                                                  dateOfBirthController.text,
                                             ),
                                           );
                                     },
@@ -199,26 +191,11 @@ class AddChildView extends StatelessWidget {
                                       context.read<NodeDataBloc>().add(
                                             ChangeData(
                                               gender: value!,
-                                              name:
-                                                  nameController.text.isNotEmpty
-                                                      ? nameController.text
-                                                      : node.name,
-                                              yearOfDeath:
-                                                  int.tryParse(
-                                                      yearOfDeathController
-                                                              .text.isNotEmpty
-                                                          ? yearOfDeathController
-                                                              .text
-                                                              .trim()
-                                                          : node.yearOfDeath
-                                                              .toString()),
-                                              yearOfBirth: int.tryParse(
-                                                  yearOfBirthController
-                                                          .text.isNotEmpty
-                                                      ? yearOfBirthController
-                                                          .text
-                                                      : node.yearOfBirth
-                                                          .toString()),
+                                              name: nameController.text,
+                                              dateOfDeath:
+                                                  dateOfDeathController.text,
+                                              dateOfBirth:
+                                                  dateOfBirthController.text,
                                             ),
                                           );
                                     },
@@ -242,8 +219,36 @@ class AddChildView extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   if (partner != null) {
-                    // context.read<FamilyTreeBloc>().add(AddChildrenEvent(
-                    //     node: node, partner: partner!, child: Person(id: -1, name: nameController.text, gender: g, level: level, relationData: relationData)!));
+                    context.read<FamilyTreeBloc>().add(
+                          AddChildrenEvent(
+                            node: node,
+                            partner: partner!,
+                            child: Person(
+                              id: -1,
+                              name: nameController.text,
+                              gender: (context.read<NodeDataBloc>().state
+                                      is NodeDataLoaded)
+                                  ? (context.read<NodeDataBloc>().state
+                                                  as NodeDataLoaded)
+                                              .gender ==
+                                          Gender.female
+                                      ? "F"
+                                      : "M"
+                                  : "M",
+                              level: node.level + 1,
+                              relationData: [
+                                RelationData(
+                                  relatedUserId: node.id,
+                                  relationTypeId: 1,
+                                ),
+                                RelationData(
+                                  relatedUserId: partner!.id,
+                                  relationTypeId: 1,
+                                )
+                              ],
+                            ),
+                          ),
+                        );
                   }
                   Navigator.pop(context);
                 },

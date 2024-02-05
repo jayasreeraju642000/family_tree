@@ -6,8 +6,8 @@ class Person {
   int id;
   String name;
   String gender;
-  int? yearOfBirth;
-  int? yearOfDeath;
+  String? dateOfBirth;
+  String? dateOfDeath;
   int level;
   List<RelationData> relationData;
   double xCoordinate = 0.0;
@@ -20,8 +20,8 @@ class Person {
       {required this.id,
       required this.name,
       required this.gender,
-      this.yearOfBirth,
-      this.yearOfDeath,
+      this.dateOfBirth,
+      this.dateOfDeath,
       required this.level,
       required this.relationData,
       this.isPatient = false,
@@ -32,8 +32,8 @@ class Person {
     int? id,
     String? name,
     String? gender,
-    int? yearOfBirth,
-    int? yearOfDeath,
+    String? dateOfBirth,
+    String? dateOfDeath,
     int? level,
     List<RelationData>? relationData,
     bool? isPatient,
@@ -44,8 +44,8 @@ class Person {
         id: id ?? this.id,
         name: name ?? this.name,
         gender: gender ?? this.gender,
-        yearOfBirth: yearOfBirth ?? this.yearOfBirth,
-        yearOfDeath: yearOfDeath ?? this.yearOfDeath,
+        dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+        dateOfDeath: dateOfDeath ?? this.dateOfDeath,
         level: level ?? this.level,
         relationData: relationData ?? this.relationData,
         isPatient: isPatient ?? this.isPatient,
@@ -58,8 +58,8 @@ class Person {
       'id': id,
       'name': name,
       'gender': gender,
-      'yearOfBirth': yearOfBirth,
-      'yearOfDeath': yearOfDeath,
+      'dateOfBirth': dateOfBirth,
+      'dateOfDeath': dateOfDeath,
       'level': level,
       'relationData': relationData.map((x) => x.toMap()).toList(),
       "isPatient": isPatient
@@ -71,8 +71,8 @@ class Person {
         id: map['id'],
         name: map['name'],
         gender: map['gender'],
-        yearOfBirth: map['yearOfBirth'],
-        yearOfDeath: map['yearOfDeath'],
+        dateOfBirth: map['dateOfBirth'],
+        dateOfDeath: map['dateOfDeath'],
         level: map['level'],
         relationData: List<RelationData>.from(
           (map['relationData']).map<RelationData>(
@@ -89,7 +89,7 @@ class Person {
 
   @override
   String toString() {
-    return 'FamilyModel(id: $id, name: $name, gender: $gender, yearOfBirth: $yearOfBirth, yearOfDeath: $yearOfDeath, level: $level, relationData: $relationData)';
+    return 'FamilyModel(id: $id, name: $name, gender: $gender, dateOfBirth: $dateOfBirth, dateOfDeath: $dateOfDeath, level: $level, relationData: $relationData)';
   }
 
   @override
@@ -99,8 +99,8 @@ class Person {
     return other.id == id &&
         other.name == name &&
         other.gender == gender &&
-        other.yearOfBirth == yearOfBirth &&
-        other.yearOfDeath == yearOfDeath &&
+        other.dateOfBirth == dateOfBirth &&
+        other.dateOfDeath == dateOfDeath &&
         other.level == level &&
         listEquals(other.relationData, relationData);
   }
@@ -110,8 +110,8 @@ class Person {
     return id.hashCode ^
         name.hashCode ^
         gender.hashCode ^
-        yearOfBirth.hashCode ^
-        yearOfDeath.hashCode ^
+        dateOfBirth.hashCode ^
+        dateOfDeath.hashCode ^
         level.hashCode ^
         relationData.hashCode;
   }
