@@ -145,7 +145,19 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
               .toList()
               .map((child) => nodes.firstWhere((node) => node.id == child))
               .toList();
-          exansionHidingForChildren(children);
+
+          for (var child in children) {
+            if (nodeFamiliesExpandedId[child.id] != true) {
+              exansionHidingForChildren(child.relationData
+                  .where((element) => element.relationTypeId == 2)
+                  .toList()
+                  .map((c) => c.relatedUserId)
+                  .toList()
+                  .map((ids) =>
+                      nodes.firstWhere((itemNode) => itemNode.id == ids))
+                  .toList());
+            }
+          }
         } else {
           var children = event.node.relationData
               .where((element) => element.relationTypeId == 2)
@@ -192,10 +204,10 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
 
       nodes.add(event.child.copyWith(id: nodes.length + 1));
 
-      event.partner.relationData.add(
-          RelationData(relatedUserId: nodes.length , relationTypeId: 2));
-      event.node.relationData.add(
-          RelationData(relatedUserId: nodes.length, relationTypeId: 2));
+      event.partner.relationData
+          .add(RelationData(relatedUserId: nodes.length, relationTypeId: 2));
+      event.node.relationData
+          .add(RelationData(relatedUserId: nodes.length, relationTypeId: 2));
       if (!event.node.relationData
           .any((element) => element.relatedUserId == event.partner.id)) {
         event.node.relationData.add(
@@ -211,6 +223,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   }
 
   void exansionHidingForChildren(List<Person> children) {
+  
     for (var child in children) {
       if (nodeFamiliesExpandedId.containsKey(child.id)) {
         if (!directRelativesOfPatient.contains(child.id)) {
@@ -379,6 +392,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
         if (notVisitedNodes[j]
             .relationData
             .any((element) => element.relationTypeId == 2)) {
+
           var childrenIds = notVisitedNodes[j]
               .relationData
               .where((element) => element.relationTypeId == 2)
