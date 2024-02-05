@@ -118,17 +118,37 @@ class FamilyNodeWidget extends StatelessWidget {
                                 builder: (context) => AlertDialog(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8)),
-                                  content: Column(
+                                  content: Column(crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      Center(
+                                        child: Text(
+                                          node.name,
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: node.gender == "F"
+                                                  ? Colors.pink
+                                                  : Colors.blue),
+                                        ),
+                                      ),
                                       Text(
-                                        node.name,
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: node.gender == "F"
-                                                ? Colors.pink
-                                                : Colors.blue),
+                                        "Gender: ${node.gender == "M" ? "Male" : node.gender == "F" ? "Female" : "Others"}",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Date of birth: ${node.dateOfBirth}",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Date of death: ${node.dateOfBirth}",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
                                       ),
                                     ],
                                   ),
