@@ -12,6 +12,10 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   static List<Person> nodes = [];
   static List<Person> activeNodes = [];
   static Map<int, bool> nodeFamiliesExpandedId = {};
+  static double widthOfNode = 150;
+  static double heightOfNode = 40;
+  static double verticalGap = 80;
+
   List<int> directRelativesOfPatient = [];
   List<Person> sampleData =
       sample.map((sampleData) => Person.fromMap(sampleData)).toList();
@@ -33,7 +37,11 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
 
     on<FamilyTreeAllNodeLoadingEvent>((event, emit) {
       emit(FamilyTreeLoading());
-      emit(FamilyTreeAllNodesLoaded(nodes: nodes));
+      emit(FamilyTreeAllNodesLoaded(
+          nodes: nodes,
+          widthOfNode: widthOfNode,
+          heightOfNode: heightOfNode,
+          verticalGap: verticalGap));
     });
 
     on<UpdateFamilyTreeNodeEvent>((event, emit) {
@@ -44,10 +52,12 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       event.node.gender = event.gender ?? event.node.gender;
       emit(
         FamilyTreeVisibleNodesLoaded(
-          nodes: nodes,
-          viewPortHeight: viewPortHeight,
-          viewPortWidth: viewPortWidth,
-        ),
+            nodes: nodes,
+            widthOfNode: widthOfNode,
+            heightOfNode: heightOfNode,
+            viewPortHeight: viewPortHeight,
+            viewPortWidth: viewPortWidth,
+            verticalGap: verticalGap),
       );
     });
 
@@ -60,7 +70,11 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       if (!event.isFromAddParents) {
         loadFamilyTree(emit);
       } else {
-        emit(FamilyTreeAllNodesLoaded(nodes: nodes));
+        emit(FamilyTreeAllNodesLoaded(
+            nodes: nodes,
+            widthOfNode: widthOfNode,
+            verticalGap: verticalGap,
+            heightOfNode: heightOfNode));
       }
     });
 
@@ -223,7 +237,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   }
 
   void exansionHidingForChildren(List<Person> children) {
-  
     for (var child in children) {
       if (nodeFamiliesExpandedId.containsKey(child.id)) {
         if (!directRelativesOfPatient.contains(child.id)) {
@@ -244,6 +257,19 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   void loadFamilyTree(emit) {
     lowestLevel = nodes.map((node) => node.level).reduce(min);
     largestLevel = nodes.map((node) => node.level).reduce(max);
+    heightOfNode=textSize(nodes.first.name, const TextStyle(fontSize: 20), 200).height;
+    for (var element in nodes) {
+      var size = textSize(element.name, const TextStyle(fontSize: 20), 200);
+      if (size.width >= widthOfNode) {
+        widthOfNode = size.width + 30;
+      }
+      if (size.height >= heightOfNode) {
+        heightOfNode = size.height * 3;
+        print(heightOfNode);
+        verticalGap = 2 * heightOfNode;
+      }
+    }
+
     for (var e in nodes) {
       e.isNodePlaced = false;
     }
@@ -259,20 +285,21 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
 
     for (var element in activeNodes) {
       if (element.xCoordinate >= viewPortWidth) {
-        viewPortWidth = element.xCoordinate +
-            2 * state.horizontalGap +
-            2 * state.widthOfNode;
+        viewPortWidth =
+            element.xCoordinate + 2 * state.horizontalGap + 2 * widthOfNode;
       }
       if (element.yCoordinates >= viewPortHeight) {
-        viewPortHeight = element.yCoordinates +
-            2 * state.verticalGap +
-            2 * state.heightOfNode;
+        viewPortHeight =
+            element.yCoordinates + 2 * verticalGap + 2 * heightOfNode;
       }
     }
 
     emit(FamilyTreeVisibleNodesLoaded(
         nodes: activeNodes,
+        heightOfNode: heightOfNode,
+        widthOfNode: widthOfNode,
         viewPortHeight: viewPortHeight,
+        verticalGap: verticalGap,
         viewPortWidth: viewPortWidth));
   }
 
@@ -287,7 +314,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
     visitedNodes.add(nodesInTheSameLevel.first);
     lastLevelWiseXcordinate[lowestLevel] =
         (lastLevelWiseXcordinate[lowestLevel] ?? 0) +
-            state.widthOfNode +
+            widthOfNode +
             state.horizontalGap;
 
     getpartnerAndChild(nodesInTheSameLevel.first,
@@ -308,11 +335,11 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
     node.yCoordinates = yCoordinates;
     node.isNodePlaced = true;
     if ((lastLevelWiseXcordinate[node.level] ?? 0) <
-        node.xCoordinate + state.widthOfNode + state.horizontalGap) {
+        node.xCoordinate + widthOfNode + state.horizontalGap) {
       lastLevelWiseXcordinate[node.level] =
-          node.xCoordinate + state.widthOfNode + state.horizontalGap;
+          node.xCoordinate + widthOfNode + state.horizontalGap;
       lastLevelWiseXcordinate[node.level - 1] =
-          node.xCoordinate + state.widthOfNode + state.horizontalGap;
+          node.xCoordinate + widthOfNode + state.horizontalGap;
     }
     if (partnerNodeIds.isNotEmpty) {
       for (var partner in partnerNodeIds) {
@@ -329,12 +356,12 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
           partnerNode.yCoordinates = yCoordinates;
 
           partnerNode.xCoordinate =
-              node.xCoordinate + state.widthOfNode + state.horizontalGap;
+              node.xCoordinate + widthOfNode + state.horizontalGap;
           partnerNode.isNodePlaced = true;
           lastLevelWiseXcordinate[node.level] =
-              partnerNode.xCoordinate + state.widthOfNode + state.horizontalGap;
+              partnerNode.xCoordinate + widthOfNode + state.horizontalGap;
           lastLevelWiseXcordinate[node.level - 1] =
-              partnerNode.xCoordinate + state.widthOfNode + state.horizontalGap;
+              partnerNode.xCoordinate + widthOfNode + state.horizontalGap;
 
           var childrenIdsOfNode = node.relationData
               .where((element) => element.relationTypeId == 2)
@@ -366,13 +393,11 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
             }
             if (commonChildren.length == 1) {
               lastLevelWiseXcordinate[node.level + 1] =
-                  partnerNode.xCoordinate +
-                      state.widthOfNode +
-                      state.horizontalGap;
+                  partnerNode.xCoordinate + widthOfNode + state.horizontalGap;
             }
             if (!child.isNodePlaced) {
               getpartnerAndChild(
-                  child, startingXCoordinate, yCoordinates + state.verticalGap);
+                  child, startingXCoordinate, yCoordinates + verticalGap);
             } // }
           }
         }
@@ -392,7 +417,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
         if (notVisitedNodes[j]
             .relationData
             .any((element) => element.relationTypeId == 2)) {
-
           var childrenIds = notVisitedNodes[j]
               .relationData
               .where((element) => element.relationTypeId == 2)
@@ -407,8 +431,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
               .toList();
           if (children.isNotEmpty) {
             double leftMostChildXcoordinate = children.first.xCoordinate;
-            double yCoordinates =
-                children.first.yCoordinates - state.verticalGap;
+            double yCoordinates = children.first.yCoordinates - verticalGap;
             for (int k = 1; k < children.length; k++) {
               if (leftMostChildXcoordinate > children[k].xCoordinate) {
                 leftMostChildXcoordinate = children[k].xCoordinate;
@@ -432,7 +455,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
                 partnerNode.yCoordinates = yCoordinates;
 
                 partnerNode.xCoordinate = notVisitedNodes[j].xCoordinate +
-                    state.widthOfNode +
+                    widthOfNode +
                     state.horizontalGap;
                 partnerNode.isNodePlaced = true;
               }
@@ -557,5 +580,18 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
         .every((item) => item.isActive)) {
       nodeFamiliesExpandedId.removeWhere((key, value) => key == patient.id);
     }
+  }
+
+  // Node Size Calaculation
+  Size textSize(String text, TextStyle style, double maxWidthOfWidget) {
+    final TextPainter textPainter = TextPainter(
+        maxLines: 3,
+        text: TextSpan(text: text, style: style),
+        textDirection: TextDirection.ltr)
+      ..layout(
+        minWidth: 0,
+        maxWidth: maxWidthOfWidget,
+      );
+    return textPainter.size;
   }
 }

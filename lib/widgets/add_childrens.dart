@@ -1,4 +1,4 @@
-import 'package:family_tree/bloc/cubit/counter_cubit.dart';
+import 'package:family_tree/bloc/counter_cubit/counter_cubit.dart';
 import 'package:family_tree/bloc/node_data/node_data_bloc.dart';
 import 'package:family_tree/widgets/edit_node_data.dart';
 import 'package:flutter/material.dart';
