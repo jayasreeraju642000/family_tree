@@ -6,14 +6,15 @@ import 'package:family_tree/family_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:family_tree/data/data.dart';
+import 'package:intl/intl.dart';
 
 class AddSiblingView extends StatelessWidget {
   final Person node;
   const AddSiblingView({super.key, required this.node});
   @override
   Widget build(BuildContext context) {
-   final familyTreeBloc= context.read<FamilyTreeBloc>();
-   familyTreeBloc.add(FamilyTreeAllNodeLoadingEvent());
+    final familyTreeBloc = context.read<FamilyTreeBloc>();
+    familyTreeBloc.add(FamilyTreeAllNodeLoadingEvent());
     context.read<NodeDataBloc>().add(LoadData(
           gender: Gender.male,
           name: '',
@@ -134,53 +135,48 @@ class AddSiblingView extends StatelessWidget {
                                         .toList();
                                     if (parents.isNotEmpty) {
                                       familyTreeBloc.add(
-                                            AddSiblings(
-                                              father: parents.firstWhere(
-                                                  (element) =>
-                                                      element.gender == "M"),
-                                              mother: parents.firstWhere(
-                                                  (element) =>
-                                                      element.gender == "F"),
-                                              sibling: Person(
-                                                  id: -1,
-                                                  level: node.level,
-                                                  name: nameController[i].text,
-                                                  dateOfDeath:
-                                                      dateOfDeathController[i]
-                                                          .text
-                                                          .trim(),
-                                                  dateOfBirth:
-                                                      dateOfBirthController[i]
-                                                          .text
-                                                          .trim(),
-                                                  gender: gender[i] ==
-                                                          Gender.female
-                                                      ? "F"
-                                                      : gender[i] == Gender.male
-                                                          ? "M"
-                                                          : "O",
-                                                  relationData: [
-                                                    RelationData(
-                                                        relatedUserId: parents
-                                                            .firstWhere(
-                                                                (element) =>
-                                                                    element
-                                                                        .gender ==
-                                                                    "M")
-                                                            .id,
-                                                        relationTypeId: 1),
-                                                    RelationData(
-                                                        relatedUserId: parents
-                                                            .firstWhere(
-                                                                (element) =>
-                                                                    element
-                                                                        .gender ==
-                                                                    "F")
-                                                            .id,
-                                                        relationTypeId: 1)
-                                                  ]),
-                                            ),
-                                          );
+                                        AddSiblings(
+                                          father: parents.firstWhere(
+                                              (element) =>
+                                                  element.gender == "M"),
+                                          mother: parents.firstWhere(
+                                              (element) =>
+                                                  element.gender == "F"),
+                                          sibling: Person(
+                                              id: -1,
+                                              level: node.level,
+                                              name: nameController[i].text,
+                                              dateOfDeath:
+                                                  dateOfDeathController[i]
+                                                      .text
+                                                      .trim(),
+                                              dateOfBirth:
+                                                  dateOfBirthController[i]
+                                                      .text
+                                                      .trim(),
+                                              gender: gender[i] == Gender.female
+                                                  ? "F"
+                                                  : gender[i] == Gender.male
+                                                      ? "M"
+                                                      : "O",
+                                              relationData: [
+                                                RelationData(
+                                                    relatedUserId: parents
+                                                        .firstWhere((element) =>
+                                                            element.gender ==
+                                                            "M")
+                                                        .id,
+                                                    relationTypeId: 1),
+                                                RelationData(
+                                                    relatedUserId: parents
+                                                        .firstWhere((element) =>
+                                                            element.gender ==
+                                                            "F")
+                                                        .id,
+                                                    relationTypeId: 1)
+                                              ]),
+                                        ),
+                                      );
                                     }
                                   }
                                 }
@@ -237,10 +233,13 @@ class AddSiblingView extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  Row(children: [
+                     Row(children: [
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         controller: dateOfBirthController[i],
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (value) => dateOfBirthValidator(
+                            value, dateOfDeathController, i),
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
@@ -271,8 +270,11 @@ class AddSiblingView extends StatelessWidget {
                       width: 10,
                     ),
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         controller: dateOfDeathController[i],
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (value) => dateOfDeathValidator(
+                            value, dateOfBirthController, i),
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
@@ -284,7 +286,7 @@ class AddSiblingView extends StatelessWidget {
                                   nameController,
                                   dateOfBirthController,
                                   dateOfDeathController,
-                                  true),
+                                  false),
                               child: const Icon(Icons.calendar_month)),
                           label: const Text(
                             "Date of death",
@@ -300,7 +302,7 @@ class AddSiblingView extends StatelessWidget {
                       ),
                     ),
                   ]),
-                  const SizedBox(
+                const SizedBox(
                     height: 20,
                   ),
                   Row(
@@ -407,7 +409,7 @@ class AddSiblingView extends StatelessWidget {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1000),
-      lastDate: DateTime(4000),
+      lastDate: DateTime.now(),
       onDatePickerModeChange: (value) {},
     );
     if (dateTime != null) {
@@ -433,5 +435,35 @@ class AddSiblingView extends StatelessWidget {
             );
       }
     }
+  }
+
+   String? dateOfBirthValidator(
+      String? value, List<TextEditingController> dateOfDeathController, int i) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        dateOfDeathController[i].text.trim().isNotEmpty) {
+      if (DateFormat('dd-MM-yyyy').parse(value.trim()).compareTo(
+              DateFormat('dd-MM-yyyy')
+                  .parse(dateOfDeathController[i].text.trim())) >
+          0) {
+        return "Date of Birth should be before date of death";
+      }
+    }
+    return null;
+  }
+
+  String? dateOfDeathValidator(
+      String? value, List<TextEditingController> dateOfBirthController, int i) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        dateOfBirthController[i].text.trim().isNotEmpty) {
+      if (DateFormat('dd-MM-yyyy').parse(value.trim()).compareTo(
+              DateFormat('dd-MM-yyyy')
+                  .parse(dateOfBirthController[i].text.trim())) <
+          0) {
+        return "Date of death should be after date of birth";
+      }
+    }
+    return null;
   }
 }

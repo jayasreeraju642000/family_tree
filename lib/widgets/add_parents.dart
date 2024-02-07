@@ -5,6 +5,7 @@ import 'package:family_tree/bloc/family_tree/family_tree_bloc.dart';
 import 'package:family_tree/bloc/node_data/node_data_bloc.dart';
 import 'package:family_tree/data/data.dart';
 import 'package:family_tree/widgets/edit_node_data.dart';
+import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class AddParents extends StatelessWidget {
@@ -205,9 +206,9 @@ class AddParents extends StatelessWidget {
                       context,
                       parent.copyWith(
                           id: nodes.length + 1,
-                          name: nameController.text,
-                          dateOfBirth: dateOfBirthController.text,
-                          dateOfDeath: dateOfDeathController.text,
+                          name: nameController.text.trim(),
+                          dateOfBirth: dateOfBirthController.text.trim(),
+                          dateOfDeath: dateOfDeathController.text.trim(),
                           level: node.level - 1,
                           gender: gender == Gender.male
                               ? "M"
@@ -220,7 +221,6 @@ class AddParents extends StatelessWidget {
                               relationTypeId: 2,
                             )
                           ]));
-                  Navigator.of(context).pop();
                 }
               },
             ),
@@ -243,6 +243,7 @@ class AddParents extends StatelessWidget {
         //     .read<FamilyTreeBloc>()
         //     .add(AddFamilyNodeEvent(node: newItem));
       }
+      Navigator.of(context).pop();
     }
   }
 
@@ -272,8 +273,12 @@ class AddParents extends StatelessWidget {
                   ),
                   Row(children: [
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         controller: dateOfBirthController,
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (value) => dateOfBirthValidator(
+                          value,
+                        ),
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
@@ -298,14 +303,18 @@ class AddParents extends StatelessWidget {
                       width: 10,
                     ),
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         controller: dateOfDeathController,
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (value) => dateOfDeathValidator(
+                          value,
+                        ),
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
                           suffixIcon: InkWell(
                               onTap: () =>
-                                  _showDatePicker(context, gender, true),
+                                  _showDatePicker(context, gender, false),
                               child: const Icon(Icons.calendar_month)),
                           label: const Text(
                             "Date of death",
@@ -416,12 +425,13 @@ class AddParents extends StatelessWidget {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1000),
-      lastDate: DateTime(4000),
+      lastDate: DateTime.now(),
       onDatePickerModeChange: (value) {},
     );
     if (dateTime != null) {
-      String formattedDate =
-          "${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year.toString()}";
+      String formattedDate = DateFormat("dd-MM-yyyy").format(dateTime);
+      // String formattedDate =
+      //     "${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year.toString()}";
       if (context.mounted) {
         if (isDateOfBirth) {
           dateOfBirthController.text = formattedDate;
@@ -440,5 +450,33 @@ class AddParents extends StatelessWidget {
             );
       }
     }
+  }
+
+  String? dateOfBirthValidator(String? value) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        dateOfDeathController.text.trim().isNotEmpty) {
+      if (DateFormat('dd-MM-yyyy').parse(value.trim()).compareTo(
+              DateFormat('dd-MM-yyyy')
+                  .parse(dateOfDeathController.text.trim())) >
+          0) {
+        return "Date of Birth should be before date of death";
+      }
+    }
+    return null;
+  }
+
+  String? dateOfDeathValidator(String? value) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        dateOfBirthController.text.trim().isNotEmpty) {
+      if (DateFormat('dd-MM-yyyy').parse(value.trim()).compareTo(
+              DateFormat('dd-MM-yyyy')
+                  .parse(dateOfBirthController.text.trim())) <
+          0) {
+        return "Date of death should be after date of birth";
+      }
+    }
+    return null;
   }
 }

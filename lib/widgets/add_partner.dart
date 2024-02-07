@@ -6,6 +6,7 @@ import 'package:family_tree/family_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:family_tree/data/data.dart';
+import 'package:intl/intl.dart';
 
 class AddPartnerView extends StatelessWidget {
   final Person node;
@@ -189,8 +190,11 @@ class AddPartnerView extends StatelessWidget {
                   ),
                   Row(children: [
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         controller: dateOfBirthController[i],
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (value) => dateOfBirthValidator(
+                            value, dateOfDeathController, i),
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
@@ -221,8 +225,11 @@ class AddPartnerView extends StatelessWidget {
                       width: 10,
                     ),
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         controller: dateOfDeathController[i],
+                        autovalidateMode: AutovalidateMode.always,
+                        validator: (value) => dateOfDeathValidator(
+                            value, dateOfBirthController, i),
                         decoration: InputDecoration(
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 5),
@@ -234,7 +241,7 @@ class AddPartnerView extends StatelessWidget {
                                   nameController,
                                   dateOfBirthController,
                                   dateOfDeathController,
-                                  true),
+                                  false),
                               child: const Icon(Icons.calendar_month)),
                           label: const Text(
                             "Date of death",
@@ -357,7 +364,7 @@ class AddPartnerView extends StatelessWidget {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1000),
-      lastDate: DateTime(4000),
+      lastDate: DateTime.now(),
       onDatePickerModeChange: (value) {},
     );
     if (dateTime != null) {
@@ -383,5 +390,35 @@ class AddPartnerView extends StatelessWidget {
             );
       }
     }
+  }
+
+  String? dateOfBirthValidator(
+      String? value, List<TextEditingController> dateOfDeathController, int i) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        dateOfDeathController[i].text.trim().isNotEmpty) {
+      if (DateFormat('dd-MM-yyyy').parse(value.trim()).compareTo(
+              DateFormat('dd-MM-yyyy')
+                  .parse(dateOfDeathController[i].text.trim())) >
+          0) {
+        return "Date of Birth should be before date of death";
+      }
+    }
+    return null;
+  }
+
+  String? dateOfDeathValidator(
+      String? value, List<TextEditingController> dateOfBirthController, int i) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        dateOfBirthController[i].text.trim().isNotEmpty) {
+      if (DateFormat('dd-MM-yyyy').parse(value.trim()).compareTo(
+              DateFormat('dd-MM-yyyy')
+                  .parse(dateOfBirthController[i].text.trim())) <
+          0) {
+        return "Date of death should be after date of birth";
+      }
+    }
+    return null;
   }
 }
