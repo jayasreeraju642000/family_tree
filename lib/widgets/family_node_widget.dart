@@ -37,7 +37,7 @@ class FamilyNodeWidget extends StatelessWidget {
                   alignment: Alignment.bottomCenter,
                   width: widthOfNode,
                   height: heightOfNode,
-                  // color: Theme.of(context).scaffoldBackgroundColor,
+                  color: Theme.of(context).scaffoldBackgroundColor,
                   child:
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
