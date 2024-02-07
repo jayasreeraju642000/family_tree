@@ -14,7 +14,6 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        
         useMaterial3: true,
       ),
       themeMode: ThemeMode.dark,
@@ -34,7 +33,14 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: const FamilyTree(),
+      body: FamilyTree(
+        child: Container(
+          color: Colors.amber,
+          padding: const EdgeInsets.all(8.0),
+          height: 100,
+          width: 400,
+        ),
+      ),
     );
   }
 }

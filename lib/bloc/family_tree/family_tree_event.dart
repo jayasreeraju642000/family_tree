@@ -3,6 +3,17 @@ part of 'family_tree_bloc.dart';
 @immutable
 sealed class FamilyTreeEvent {}
 
+final class FamilyEventIntitial extends FamilyTreeEvent {
+  final double? widthOfNode;
+  final double? heightOfNode;
+  final bool isChildWidgetVisible;
+  FamilyEventIntitial({
+    this.widthOfNode,
+    this.heightOfNode,
+    this.isChildWidgetVisible = false,
+  });
+}
+
 final class FamilyTreeVisibleNodeLoadingEvent extends FamilyTreeEvent {}
 
 final class FamilyTreeAllNodeLoadingEvent extends FamilyTreeEvent {}
@@ -61,7 +72,8 @@ final class UpdateVisibilityOfRelatedNodes extends FamilyTreeEvent {
   final Person node;
   final bool isExpanded;
 
-  UpdateVisibilityOfRelatedNodes({required this.node,required this.isExpanded});
+  UpdateVisibilityOfRelatedNodes(
+      {required this.node, required this.isExpanded});
 }
 
 final class AddPartnerNodeEvent extends FamilyTreeEvent {
@@ -69,5 +81,8 @@ final class AddPartnerNodeEvent extends FamilyTreeEvent {
 
   final Person partnerNode;
 
-  AddPartnerNodeEvent( {required this.node,required this.partnerNode,});
+  AddPartnerNodeEvent({
+    required this.node,
+    required this.partnerNode,
+  });
 }

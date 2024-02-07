@@ -48,7 +48,7 @@ class AddPartnerView extends StatelessWidget {
                     return AlertDialog(
                       title: Row(
                         children: [
-                          const Expanded(child: Text("Add Child")),
+                          const Expanded(child: Text("Add Partner")),
                           InkWell(
                             onTap: () {
                               Navigator.pop(context);
@@ -116,25 +116,25 @@ class AddPartnerView extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () {
                             for (int i = 0; i < counterState.count; i++) {
-                                context.read<FamilyTreeBloc>().add(
-                                      AddPartnerNodeEvent(
-                                        node: node,
-                                        partnerNode: Person(
-                                            id: -1,
-                                            name: nameController[i].text,
-                                            gender: gender[i] == Gender.male
-                                                ? "M"
-                                                : gender[i] == Gender.female
-                                                    ? "F"
-                                                    : "O",
-                                            level: node.level,
-                                            relationData: [
-                                              RelationData(
-                                                  relatedUserId: node.id,
-                                                  relationTypeId: 0)
-                                            ]),
-                                      ),
-                                    );
+                              context.read<FamilyTreeBloc>().add(
+                                    AddPartnerNodeEvent(
+                                      node: node,
+                                      partnerNode: Person(
+                                          id: -1,
+                                          name: nameController[i].text,
+                                          gender: gender[i] == Gender.male
+                                              ? "M"
+                                              : gender[i] == Gender.female
+                                                  ? "F"
+                                                  : "O",
+                                          level: node.level,
+                                          relationData: [
+                                            RelationData(
+                                                relatedUserId: node.id,
+                                                relationTypeId: 0)
+                                          ]),
+                                    ),
+                                  );
                             }
                             Navigator.pop(context);
                           },

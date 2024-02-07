@@ -5,7 +5,9 @@ sealed class FamilyTreeState {
   final double horizontalGap = 75;
 }
 
-final class FamilyTreeLoading extends FamilyTreeState {}
+final class FamilyTreeLoading extends FamilyTreeState {
+  
+}
 
 final class FamilyTreeVisibleNodesLoaded extends FamilyTreeState {
   final List<Person> nodes;

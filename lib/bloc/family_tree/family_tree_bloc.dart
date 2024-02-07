@@ -150,27 +150,29 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
               .map((id) => id.relatedUserId)
               .toList()
               .map((child) => nodes.firstWhere((node) => node.id == child))
-              .toList()
-              .first;
-          var children = parents.relationData
-              .where((element) => element.relationTypeId == 2)
-              .toList()
-              .map((id) => id.relatedUserId)
-              .toList()
-              .map((child) => nodes.firstWhere((node) => node.id == child))
               .toList();
-
-          for (var child in children) {
-            if (nodeFamiliesExpandedId[child.id] != true) {
-              exansionHidingForChildren(child.relationData
-                  .where((element) => element.relationTypeId == 2)
-                  .toList()
-                  .map((c) => c.relatedUserId)
-                  .toList()
-                  .map((ids) =>
-                      nodes.firstWhere((itemNode) => itemNode.id == ids))
-                  .toList());
+          for (var parent in parents) {
+            var children = parent.relationData
+                .where((element) => element.relationTypeId == 2)
+                .toList()
+                .map((id) => id.relatedUserId)
+                .toList()
+                .map((child) => nodes.firstWhere((node) => node.id == child))
+                .toList();
+            children.removeWhere((element) => element.id == event.node.id);
+            for (var child in children) {
+              if (nodeFamiliesExpandedId[child.id] == true) {
+                exansionHidingForChildren(child.relationData
+                    .where((element) => element.relationTypeId == 2)
+                    .toList()
+                    .map((c) => c.relatedUserId)
+                    .toList()
+                    .map((ids) =>
+                        nodes.firstWhere((itemNode) => itemNode.id == ids))
+                    .toList());
+              }
             }
+            exansionHidingForChildren(children);
           }
         } else {
           var children = event.node.relationData
@@ -257,19 +259,17 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   void loadFamilyTree(emit) {
     lowestLevel = nodes.map((node) => node.level).reduce(min);
     largestLevel = nodes.map((node) => node.level).reduce(max);
-    heightOfNode=textSize(nodes.first.name, const TextStyle(fontSize: 20), 200).height;
-    for (var element in nodes) {
-      var size = textSize(element.name, const TextStyle(fontSize: 20), 200);
+    widthOfNode = 0;
+    for (var i = 0; i < nodes.length; i++) {
+      var size = textSize(nodes[i].name, const TextStyle(fontSize: 20), 175);
       if (size.width >= widthOfNode) {
-        widthOfNode = size.width + 30;
+        widthOfNode = size.width + 25;
       }
-      if (size.height >= heightOfNode) {
-        heightOfNode = size.height * 3;
-        print(heightOfNode);
+      if (size.height >= heightOfNode - 25) {
+        heightOfNode = size.height + 25;
         verticalGap = 2 * heightOfNode;
       }
     }
-
     for (var e in nodes) {
       e.isNodePlaced = false;
     }
@@ -286,11 +286,11 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
     for (var element in activeNodes) {
       if (element.xCoordinate >= viewPortWidth) {
         viewPortWidth =
-            element.xCoordinate + 2 * state.horizontalGap + 2 * widthOfNode;
+            element.xCoordinate + state.horizontalGap / 2 + widthOfNode;
       }
       if (element.yCoordinates >= viewPortHeight) {
         viewPortHeight =
-            element.yCoordinates + 2 * verticalGap + 2 * heightOfNode;
+            element.yCoordinates + verticalGap + heightOfNode * 1.5;
       }
     }
 
@@ -585,7 +585,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   // Node Size Calaculation
   Size textSize(String text, TextStyle style, double maxWidthOfWidget) {
     final TextPainter textPainter = TextPainter(
-        maxLines: 3,
+        maxLines: 10,
         text: TextSpan(text: text, style: style),
         textDirection: TextDirection.ltr)
       ..layout(

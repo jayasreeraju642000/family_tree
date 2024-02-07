@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FamilyTree extends StatelessWidget {
+  final Widget? child;
   const FamilyTree({
+    this.child,
     super.key,
   });
 
@@ -20,9 +22,17 @@ class FamilyTree extends StatelessWidget {
   Widget build(BuildContext context) {
     final verticalScrollController = ScrollController();
     final horizontalScrollController = ScrollController();
+
     return BlocProvider(
       create: (context) => FamilyTreeBloc(),
       child: Builder(builder: (context) {
+        // context.read<FamilyTreeBloc>().add(
+        //       FamilyEventIntitial(
+        //           widthOfNode: SizedBox(
+        //             child: child,
+        //           ).width,
+        //           heightOfNode: SizedBox(child: child).height),
+        //     );
         context.read<FamilyTreeBloc>().add(FamilyTreeVisibleNodeLoadingEvent());
         return BlocBuilder<FamilyTreeBloc, FamilyTreeState>(
           builder: (context, state) {
@@ -41,11 +51,11 @@ class FamilyTree extends StatelessWidget {
                                 child: InteractiveViewer(
                               constrained: false,
                               minScale: 0.0001,
+                              panAxis: PanAxis.horizontal,
                               maxScale: 8.0,
                               child: Container(
                                 padding: const EdgeInsets.only(
-                                    top:50,
-                                    left:50,right: 50),
+                                    top: 50, left: 50, right: 50),
                                 width: MediaQuery.of(context).size.width,
                                 child: SingleChildScrollView(
                                   controller: verticalScrollController,
@@ -75,6 +85,7 @@ class FamilyTree extends StatelessWidget {
                                               node: node,
                                               widthOfNode: state.widthOfNode,
                                               heightOfNode: state.heightOfNode,
+                                              // child: child,
                                             ),
                                         ],
                                       ),

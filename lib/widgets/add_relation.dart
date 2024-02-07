@@ -48,28 +48,33 @@ class AddRelation extends StatelessWidget {
               height: 20,
             ),
           },
+          if (node.relationData
+              .where((element) => element.relationTypeId == 1)
+              .toList()
+              .isNotEmpty) ...{
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => MultiBlocProvider(providers: [
+                    BlocProvider(
+                      create: (context) => FamilyTreeBloc(),
+                    ),
+                    BlocProvider(
+                      create: (context) => NodeDataBloc(),
+                    )
+                  ], child: AddSiblingView(node: node)),
+                );
+              },
+              child: const Text("Add Siblings"),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          },
           ElevatedButton(
             onPressed: () {
               showDialog(
-                context: context,
-                builder: (context) => MultiBlocProvider(providers: [
-                  BlocProvider(
-                    create: (context) => FamilyTreeBloc(),
-                  ),
-                  BlocProvider(
-                    create: (context) => NodeDataBloc(),
-                  )
-                ], child: AddSiblingView(node: node)),
-              );
-            },
-            child: const Text("Add Siblings"),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-                showDialog(
                 context: context,
                 builder: (context) => MultiBlocProvider(providers: [
                   BlocProvider(
@@ -88,7 +93,7 @@ class AddRelation extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-               showDialog(
+              showDialog(
                 context: context,
                 builder: (context) => MultiBlocProvider(providers: [
                   BlocProvider(

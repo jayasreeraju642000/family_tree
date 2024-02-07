@@ -12,11 +12,13 @@ class FamilyNodeWidget extends StatelessWidget {
   final double widthOfNode;
   final double heightOfNode;
   final Function? function;
+  final Widget? child;
   const FamilyNodeWidget(
       {Key? key,
       required this.node,
       required this.heightOfNode,
       required this.widthOfNode,
+      this.child,
       this.function})
       : super(key: key);
 
@@ -31,160 +33,167 @@ class FamilyNodeWidget extends StatelessWidget {
               return Positioned(
                 top: node.yCoordinates,
                 left: node.xCoordinate,
-                child: Container(
+                child: child ?? Container(
                   alignment: Alignment.bottomCenter,
                   width: widthOfNode,
                   height: heightOfNode,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                  // color: Theme.of(context).scaffoldBackgroundColor,
+                  child:
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          if (hasNewItem(
-                                  state.nodes.map((e) => e.id).toList(),
-                                  node.relationData
-                                      .map((e) => e.relatedUserId)
-                                      .toList()) ||
-                              FamilyTreeBloc.nodeFamiliesExpandedId
-                                  .containsKey(node.id)) ...{
-                            InkWell(
-                              onTap: () {
-                                context.read<FamilyTreeBloc>().add(
-                                    UpdateVisibilityOfRelatedNodes(
-                                        node: node,
-                                        isExpanded: FamilyTreeBloc
-                                                    .nodeFamiliesExpandedId[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (hasNewItem(
+                                      state.nodes.map((e) => e.id).toList(),
+                                      node.relationData
+                                          .map((e) => e.relatedUserId)
+                                          .toList()) ||
+                                  FamilyTreeBloc.nodeFamiliesExpandedId
+                                      .containsKey(node.id)) ...{
+                                InkWell(
+                                  onTap: () {
+                                    context.read<FamilyTreeBloc>().add(
+                                        UpdateVisibilityOfRelatedNodes(
+                                            node: node,
+                                            isExpanded: FamilyTreeBloc
+                                                        .nodeFamiliesExpandedId[
+                                                    node.id] ==
+                                                true));
+                                  },
+                                  child: Icon(
+                                    FamilyTreeBloc.nodeFamiliesExpandedId[
                                                 node.id] ==
-                                            true));
+                                            true
+                                        ? Icons.person_outlined
+                                        : Icons.groups_outlined,
+                                    size: 20,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                               },
-                              child: Icon(
-                                FamilyTreeBloc
-                                            .nodeFamiliesExpandedId[node.id] ==
-                                        true
-                                    ? Icons.person_outlined
-                                    : Icons.groups_outlined,
-                                size:20,
-                                color: Colors.grey,
+                              const Spacer(),
+                              Text(
+                                '${(node.dateOfBirth ?? 'NA').split('-').last} - ${(node.dateOfDeath ?? 'NA').split('-').last}',
+                                style: const TextStyle(fontSize: 9),
                               ),
-                            ),
-                          },
-                          const Spacer(),
-                          Text(
-                            '${(node.dateOfBirth ?? 'NA').split('-').last} - ${(node.dateOfDeath ?? 'NA').split('-').last}',
-                            style: const TextStyle(fontSize: 9),
-                          ),
-                          const SizedBox(
-                            width: 5,
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  showDialog(
+                                    barrierDismissible: true,
+                                    context: context,
+                                    builder: (ctx) => AddRelation(
+                                      node: node,
+                                    ),
+                                  ).then((value) {
+                                    context.read<FamilyTreeBloc>().add(
+                                        FamilyTreeVisibleNodeLoadingEvent());
+                                  });
+                                },
+                                child: const Icon(
+                                  Icons.add_circle_outline,
+                                  size: 20,
+                                ),
+                              ),
+                            ],
                           ),
                           InkWell(
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
                             onTap: () {
-                              showDialog(
-                                barrierDismissible: true,
-                                context: context,
-                                builder: (ctx) => AddRelation(
-                                  node: node,
-                                ),
-                              ).then((value) {
-                                context
-                                    .read<FamilyTreeBloc>()
-                                    .add(FamilyTreeVisibleNodeLoadingEvent());
-                              });
+                              context
+                                  .read<DetailsPanelVisibilityCubit>()
+                                  .onVisibilityChange(node.id);
                             },
-                            child: const Icon(
-                              Icons.add_circle_outline,
-                              size: 20,
+                            child: Container(
+                              height: heightOfNode - 20,
+                              width: widthOfNode,
+                              alignment: Alignment.center,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: node.isPatient
+                                    ? Colors.blue.shade200
+                                    : Theme.of(context).scaffoldBackgroundColor,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          node.gender == "F"
+                                              ? Icons.female
+                                              : node.gender == "M"
+                                                  ? Icons.male
+                                                  : Icons.transgender,
+                                          color: node.gender == "F"
+                                              ? Colors.pink
+                                              : node.gender == "M"
+                                                  ? Colors.blue
+                                                  : Colors.purple,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            node.name,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      showAdaptiveDialog(
+                                        context: context,
+                                        builder: (context) => MultiBlocProvider(
+                                          providers: [
+                                            BlocProvider(
+                                              create: (context) =>
+                                                  FamilyTreeBloc(),
+                                            ),
+                                            BlocProvider(
+                                              create: (context) =>
+                                                  NodeDataBloc(),
+                                            )
+                                          ],
+                                          child: EditNodeData(
+                                            node: node,
+                                          ),
+                                        ),
+                                      ).then((value) {
+                                        context.read<FamilyTreeBloc>().add(
+                                            FamilyTreeVisibleNodeLoadingEvent());
+                                      });
+                                    },
+                                    child: const Icon(
+                                      Icons.edit_outlined,
+                                      size: 20,
+                                      color: Colors.grey,
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      Container(
-                        height: heightOfNode - 20,
-                        width: widthOfNode,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: node.isPatient ? Colors.blue.shade200 : Theme.of(context).scaffoldBackgroundColor,
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: InkWell(
-                                focusColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                                splashColor: Colors.transparent,
-                                highlightColor: Colors.transparent,
-                                onTap: () {
-                                  context
-                                      .read<DetailsPanelVisibilityCubit>()
-                                      .onVisibilityChange(node.id);
-                                },
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      node.gender == "F"
-                                          ? Icons.female
-                                          : node.gender == "M"
-                                              ? Icons.male
-                                              : Icons.transgender,
-                                      color: node.gender == "F"
-                                          ? Colors.pink
-                                          : node.gender == "M"
-                                              ? Colors.blue
-                                              : Colors.purple,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        node.name,
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                showAdaptiveDialog(
-                                  context: context,
-                                  builder: (context) => MultiBlocProvider(
-                                    providers: [
-                                      BlocProvider(
-                                        create: (context) => FamilyTreeBloc(),
-                                      ),
-                                      BlocProvider(
-                                        create: (context) => NodeDataBloc(),
-                                      )
-                                    ],
-                                    child: EditNodeData(
-                                      node: node,
-                                    ),
-                                  ),
-                                ).then((value) {
-                                  context
-                                      .read<FamilyTreeBloc>()
-                                      .add(FamilyTreeVisibleNodeLoadingEvent());
-                                });
-                              },
-                              child: const Icon(
-                                Icons.edit_outlined,
-                                size: 20,
-                                color: Colors.grey,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               );
             } else {
