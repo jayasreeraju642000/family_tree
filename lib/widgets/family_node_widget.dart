@@ -33,13 +33,13 @@ class FamilyNodeWidget extends StatelessWidget {
               return Positioned(
                 top: node.yCoordinates,
                 left: node.xCoordinate,
-                child: child ?? Container(
-                  alignment: Alignment.bottomCenter,
-                  width: widthOfNode,
-                  height: heightOfNode,
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child:
-                      Column(
+                child: child ??
+                    Container(
+                      alignment: Alignment.bottomCenter,
+                      width: widthOfNode,
+                      height: heightOfNode,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -112,89 +112,106 @@ class FamilyNodeWidget extends StatelessWidget {
                                   .read<DetailsPanelVisibilityCubit>()
                                   .onVisibilityChange(node.id);
                             },
-                            child: Container(
-                              height: heightOfNode - 20,
-                              width: widthOfNode,
-                              alignment: Alignment.center,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: node.isPatient
-                                    ? Colors.blue.shade200
-                                    : Theme.of(context).scaffoldBackgroundColor,
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          node.gender == "F"
-                                              ? Icons.female
-                                              : node.gender == "M"
-                                                  ? Icons.male
-                                                  : Icons.transgender,
-                                          color: node.gender == "F"
-                                              ? Colors.pink
-                                              : node.gender == "M"
-                                                  ? Colors.blue
-                                                  : Colors.purple,
-                                          size: 20,
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            node.name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                            child: Stack(
+                              children: [
+                                Container(
+                                  height: heightOfNode - 20,
+                                  width: widthOfNode,
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    color: node.isPatient
+                                        ? Colors.blue.shade200
+                                        : Theme.of(context)
+                                            .scaffoldBackgroundColor,
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  InkWell(
-                                    onTap: () {
-                                      showAdaptiveDialog(
-                                        context: context,
-                                        builder: (context) => MultiBlocProvider(
-                                          providers: [
-                                            BlocProvider(
-                                              create: (context) =>
-                                                  FamilyTreeBloc(),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              node.gender == "F"
+                                                  ? Icons.female
+                                                  : node.gender == "M"
+                                                      ? Icons.male
+                                                      : Icons.transgender,
+                                              color: node.gender == "F"
+                                                  ? Colors.pink
+                                                  : node.gender == "M"
+                                                      ? Colors.blue
+                                                      : Colors.purple,
+                                              size: 20,
                                             ),
-                                            BlocProvider(
-                                              create: (context) =>
-                                                  NodeDataBloc(),
-                                            )
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                node.name,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium,
+                                              ),
+                                            ),
                                           ],
-                                          child: EditNodeData(
-                                            node: node,
-                                          ),
                                         ),
-                                      ).then((value) {
-                                        context.read<FamilyTreeBloc>().add(
-                                            FamilyTreeVisibleNodeLoadingEvent());
-                                      });
-                                    },
-                                    child: const Icon(
-                                      Icons.edit_outlined,
-                                      size: 20,
-                                      color: Colors.grey,
-                                    ),
-                                  )
-                                ],
-                              ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          showAdaptiveDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                MultiBlocProvider(
+                                              providers: [
+                                                BlocProvider(
+                                                  create: (context) =>
+                                                      FamilyTreeBloc(),
+                                                ),
+                                                BlocProvider(
+                                                  create: (context) =>
+                                                      NodeDataBloc(),
+                                                )
+                                              ],
+                                              child: EditNodeData(
+                                                node: node,
+                                              ),
+                                            ),
+                                          ).then((value) {
+                                            context.read<FamilyTreeBloc>().add(
+                                                FamilyTreeVisibleNodeLoadingEvent());
+                                          });
+                                        },
+                                        child: const Icon(
+                                          Icons.edit_outlined,
+                                          size: 20,
+                                          color: Colors.grey,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Positioned(
+                                    left: 10,
+                                    bottom: 2,
+                                    child: InkWell(
+                                      onTap: () {},
+                                      child: const Icon(
+                                        Icons.delete_outline,
+                                        size: 20,
+                                        color: Colors.grey,
+                                      ),
+                                    ))
+                              ],
                             ),
                           ),
                         ],
                       ),
-                ),
+                    ),
               );
             } else {
               return const SizedBox();

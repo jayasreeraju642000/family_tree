@@ -51,7 +51,6 @@ class FamilyTree extends StatelessWidget {
                                 child: InteractiveViewer(
                               constrained: false,
                               minScale: 0.0001,
-                              panAxis: PanAxis.horizontal,
                               maxScale: 8.0,
                               child: Container(
                                 padding: const EdgeInsets.only(
