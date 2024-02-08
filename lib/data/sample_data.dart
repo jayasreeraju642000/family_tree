@@ -9,7 +9,7 @@ List<Map<String, dynamic>> sample = [
       {"relatedUserId": 13, "relationTypeId": 2},
       {"relatedUserId": 30, "relationTypeId": 2},
     ],
-    "name": "Sreekumar Vadakkath Ramanunni",
+    "name": "John Doe",
     "level": 0,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",

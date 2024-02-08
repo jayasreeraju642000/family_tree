@@ -242,7 +242,7 @@ class FamilyTreePainter extends CustomPainter {
           Offset((node.xCoordinate) + nodeWidth / 2,
               (node.yCoordinates) - verticalGap / 4),
           Offset((node.xCoordinate) + nodeWidth / 2,
-              (node.yCoordinates) + verticalGap / 6),
+              (node.yCoordinates) + verticalGap / 4),
           Paint()
             ..color = Colors.grey
             ..strokeWidth = 1,

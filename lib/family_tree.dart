@@ -94,58 +94,62 @@ class FamilyTree extends StatelessWidget {
                               ),
                             )),
                             if (pannelVisibility.isPannelVisible)
-                              Builder(builder: (context) {
-                                var node = state.nodes.firstWhere((element) =>
-                                    element.id ==
-                                    pannelVisibility.lastViewedNodeId);
+                              if (state.nodes.indexWhere((element) =>
+                                      element.id ==
+                                      pannelVisibility.lastViewedNodeId) !=
+                                  -1)
+                                Builder(builder: (context) {
+                                  var node = state.nodes.firstWhere((element) =>
+                                      element.id ==
+                                      pannelVisibility.lastViewedNodeId);
 
-                                return Container(
-                                  decoration: const BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: Colors.grey))),
-                                  width: 400,
-                                  margin: const EdgeInsets.only(left: 20),
-                                  padding: const EdgeInsets.all(20),
-                                  height: MediaQuery.of(context).size.height,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Center(
-                                        child: Text(
-                                          node.name,
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              color: node.gender == "F"
-                                                  ? Colors.pink
-                                                  : Colors.blue),
+                                  return Container(
+                                    decoration: const BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: Colors.grey))),
+                                    width: 400,
+                                    margin: const EdgeInsets.only(left: 20),
+                                    padding: const EdgeInsets.all(20),
+                                    height: MediaQuery.of(context).size.height,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            node.name,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: node.gender == "F"
+                                                    ? Colors.pink
+                                                    : Colors.blue),
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        "Gender: ${node.gender == "M" ? "Male" : node.gender == "F" ? "Female" : "Others"}",
-                                        style: const TextStyle(
-                                          fontSize: 12,
+                                        Text(
+                                          "Gender: ${node.gender == "M" ? "Male" : node.gender == "F" ? "Female" : "Others"}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        "Date of birth: ${node.dateOfBirth}",
-                                        style: const TextStyle(
-                                          fontSize: 12,
+                                        Text(
+                                          "Date of birth: ${node.dateOfBirth}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        "Date of death: ${node.dateOfBirth}",
-                                        style: const TextStyle(
-                                          fontSize: 12,
+                                        Text(
+                                          "Date of death: ${node.dateOfBirth}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              })
+                                      ],
+                                    ),
+                                  );
+                                })
                           ],
                         );
                       },

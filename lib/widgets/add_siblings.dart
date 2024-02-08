@@ -182,7 +182,7 @@ class AddSiblingView extends StatelessWidget {
                                 }
                               }
                             }
-                            Navigator.pop(context);
+                                Navigator.popUntil(context, (route) => route.isFirst);
                           },
                           child: const Text("Save"),
                         )

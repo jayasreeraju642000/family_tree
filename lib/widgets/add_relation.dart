@@ -17,7 +17,11 @@ class AddRelation extends StatelessWidget {
     return AlertDialog(
       title: Row(
         children: [
-          const Expanded(child: Text("Add Relation")),
+          const Expanded(
+              child: Text(
+            "Add Relation",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          )),
           InkWell(
             onTap: () {
               Navigator.pop(context);
@@ -29,6 +33,41 @@ class AddRelation extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                 Text(
+                    "Name: ${node.name}",
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),Text(
+                    "Gender: ${node.gender == "M" ? "Male" : node.gender == "F" ? "Female" : "Others"}",
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    "Date of birth: ${node.dateOfBirth}",
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    "Date of death: ${node.dateOfBirth}",
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                    const SizedBox(
+                  height: 20,
+                ),
+                ],
+              ),
+            ],
+          ),
           if (node.relationData
               .where((element) => element.relationTypeId == 1)
               .toList()

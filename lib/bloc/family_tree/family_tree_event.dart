@@ -33,6 +33,12 @@ final class UpdateFamilyTreeNodeEvent extends FamilyTreeEvent {
   });
 }
 
+final class DeleteFamilyTreeNode extends FamilyTreeEvent{
+  final Person node;
+
+  DeleteFamilyTreeNode({required this.node});
+}
+
 final class AddFamilyNodeEvent extends FamilyTreeEvent {
   final Person node;
   final bool isFromAddParents;

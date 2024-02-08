@@ -12,11 +12,11 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   static List<Person> nodes = [];
   static List<Person> activeNodes = [];
   static Map<int, bool> nodeFamiliesExpandedId = {};
-  static double widthOfNode = 150;
+  static double widthOfNode = 200;
   static double heightOfNode = 40;
   static double verticalGap = 80;
+  static List<int> directRelativesOfPatient = [];
 
-  List<int> directRelativesOfPatient = [];
   List<Person> sampleData =
       sample.map((sampleData) => Person.fromMap(sampleData)).toList();
   List<Person> visitedNodes = [];
@@ -34,7 +34,13 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       }
       loadFamilyTree(emit);
     });
-
+    on<DeleteFamilyTreeNode>((event, emit) {
+      if (event.node.level < 0) {
+        deleteAllRelation(event.node);
+      }
+      deleteExceptParents(event.node);
+      loadFamilyTree(emit);
+    });
     on<FamilyTreeAllNodeLoadingEvent>((event, emit) {
       emit(FamilyTreeLoading());
       emit(FamilyTreeAllNodesLoaded(
@@ -191,19 +197,23 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       var outputKeys = nodeFamiliesExpandedId.keys
           .where((key) => nodeFamiliesExpandedId[key] == true)
           .toList();
-      outputKeys
-          .map((key) => nodes.firstWhere((element) => element.id == key))
-          .toList()
-          .forEach((element) {
-        element.relationData
-            .map((i) => i.relatedUserId)
+      if (outputKeys.isNotEmpty) {
+        outputKeys
+            .map((key) {
+              return nodes.firstWhere((element) => element.id == key);
+            })
             .toList()
-            .map((item) => nodes.firstWhere((node) => node.id == item))
-            .toList()
-            .forEach((relation) {
-          relation.isActive = true;
-        });
-      });
+            .forEach((element) {
+              element.relationData
+                  .map((i) => i.relatedUserId)
+                  .toList()
+                  .map((item) => nodes.firstWhere((node) => node.id == item))
+                  .toList()
+                  .forEach((relation) {
+                relation.isActive = true;
+              });
+            });
+      }
       loadFamilyTree(emit);
     });
 
@@ -257,45 +267,47 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   }
 
   void loadFamilyTree(emit) {
-    lowestLevel = nodes.map((node) => node.level).reduce(min);
-    largestLevel = nodes.map((node) => node.level).reduce(max);
-    widthOfNode = 0;
-    for (var i = 0; i < nodes.length; i++) {
-      var size = textSize(nodes[i].name, const TextStyle(fontSize: 20), 175);
-      if (size.width >= widthOfNode) {
-        widthOfNode = size.width + 25;
+    if (nodes.isNotEmpty) {
+      lowestLevel = nodes.map((node) => node.level).reduce(min);
+      largestLevel = nodes.map((node) => node.level).reduce(max);
+
+      for (var i = 0; i < nodes.length; i++) {
+        var size = textSize(nodes[i].name, const TextStyle(fontSize: 20), 200);
+        if (size.width >= widthOfNode) {
+          widthOfNode = size.width + 25;
+        }
+        if (size.height >= heightOfNode - 25) {
+          heightOfNode = size.height + 25;
+          verticalGap = 2 * heightOfNode;
+        }
       }
-      if (size.height >= heightOfNode - 25) {
-        heightOfNode = size.height + 25;
-        verticalGap = 2 * heightOfNode;
+
+      for (var e in nodes) {
+        e.isNodePlaced = false;
+      }
+
+      visibilitySetUp();
+      activeNodes = nodes.where((element) => element.isActive).toList();
+      placeNodes();
+      correctThePositionOfNotVisitedNodes();
+
+      activeNodes.sort(
+        (a, b) => a.level.compareTo(b.level),
+      );
+
+      for (var element in activeNodes) {
+        if (element.xCoordinate >= viewPortWidth) {
+          viewPortWidth =
+              element.xCoordinate + state.horizontalGap / 2 + widthOfNode;
+        }
+        if (element.yCoordinates >= viewPortHeight) {
+          viewPortHeight =
+              element.yCoordinates + verticalGap + heightOfNode * 1.5;
+        }
       }
     }
-    for (var e in nodes) {
-      e.isNodePlaced = false;
-    }
-
-    visibilitySetUp();
-    activeNodes = nodes.where((element) => element.isActive).toList();
-    placeNodes();
-    correctThePositionOfNotVisitedNodes();
-
-    activeNodes.sort(
-      (a, b) => a.level.compareTo(b.level),
-    );
-
-    for (var element in activeNodes) {
-      if (element.xCoordinate >= viewPortWidth) {
-        viewPortWidth =
-            element.xCoordinate + state.horizontalGap / 2 + widthOfNode;
-      }
-      if (element.yCoordinates >= viewPortHeight) {
-        viewPortHeight =
-            element.yCoordinates + verticalGap + heightOfNode * 1.5;
-      }
-    }
-
     emit(FamilyTreeVisibleNodesLoaded(
-        nodes: activeNodes,
+        nodes: nodes.isEmpty ? [] : activeNodes,
         heightOfNode: heightOfNode,
         widthOfNode: widthOfNode,
         viewPortHeight: viewPortHeight,
@@ -593,5 +605,103 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
         maxWidth: maxWidthOfWidget,
       );
     return textPainter.size;
+  }
+
+  void deleteExceptParents(Person node) {
+    if (nodeFamiliesExpandedId.containsKey(node.id)) {
+      nodeFamiliesExpandedId.removeWhere((key, value) => key == node.id);
+    }
+    var parents = node.relationData
+        .where((element) => element.relationTypeId == 1)
+        .toList()
+        .map((item) =>
+            nodes.firstWhere((nodeData) => nodeData.id == item.relatedUserId))
+        .toList();
+    if (parents.isNotEmpty) {
+      for (var parent in parents) {
+        parent.relationData
+            .removeWhere((element) => element.relatedUserId == node.id);
+      }
+    }
+    var children = node.relationData
+        .where((element) => element.relationTypeId == 2)
+        .toList()
+        .map((item) =>
+            nodes.firstWhere((nodeData) => nodeData.id == item.relatedUserId))
+        .toList();
+    if (children.isNotEmpty) {
+      for (var child in children) {
+        if (nodeFamiliesExpandedId.containsKey(child.id)) {
+          nodeFamiliesExpandedId.removeWhere((key, value) => key == child.id);
+        }
+        if (!directRelativesOfPatient.contains(child.id)) {
+          deleteExceptParents(child);
+        }
+      }
+    }
+
+    var partners = node.relationData
+        .where((element) => element.relationTypeId == 0)
+        .toList()
+        .map((item) =>
+            nodes.firstWhere((nodeData) => nodeData.id == item.relatedUserId))
+        .toList();
+    if (partners.isNotEmpty) {
+      for (var partner in partners) {
+        if (nodeFamiliesExpandedId.containsKey(partner.id)) {
+          nodeFamiliesExpandedId.removeWhere((key, value) => key == partner.id);
+        }
+        if (!directRelativesOfPatient.contains(partner.id)) {
+          for (var element in nodes) {
+            if (element.relationData.any(
+                (relatedData) => relatedData.relatedUserId == partner.id)) {
+              element.relationData.removeWhere(
+                  (relatedData) => relatedData.relatedUserId == partner.id);
+            }
+          }
+          nodes.removeWhere((element) => element.id == partner.id);
+        }
+      }
+    }
+
+    if (!(node.relationData.any((relation) =>
+        relation.relationTypeId == 0 &&
+        relation.relatedUserId ==
+            nodes.firstWhere((element) => element.isPatient).id))) {
+      for (var element in nodes) {
+        if (element.relationData
+            .any((relatedData) => relatedData.relatedUserId == node.id)) {
+          element.relationData.removeWhere(
+              (relatedData) => relatedData.relatedUserId == node.id);
+        }
+      }
+      nodes.removeWhere((element) => element.id == node.id);
+    } else if (!node.relationData
+        .any((element) => element.relationTypeId == 2)) {
+      for (var element in nodes) {
+        if (element.relationData
+            .any((relatedData) => relatedData.relatedUserId == node.id)) {
+          element.relationData.removeWhere(
+              (relatedData) => relatedData.relatedUserId == node.id);
+        }
+      }
+      nodes.removeWhere((element) => element.id == node.id);
+    }
+  }
+
+  void deleteAllRelation(Person node) {
+    var parents = node.relationData
+        .where((element) => element.relationTypeId == 1)
+        .toList()
+        .map((item) =>
+            nodes.firstWhere((nodeData) => nodeData.id == item.relatedUserId))
+        .toList();
+    if (parents.isNotEmpty) {
+      for (var parent in parents) {
+        if (nodes.any((element) => element.id == parent.id)) {
+          deleteExceptParents(parent);
+        }
+      }
+    }
   }
 }

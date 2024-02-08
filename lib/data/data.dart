@@ -12,7 +12,6 @@ class Person {
   List<RelationData> relationData;
   double xCoordinate = 0.0;
   double yCoordinates = 0.0;
-  double familyWidth = 0.0;
   bool isPatient;
   bool isNodePlaced = false;
   bool isActive=false;

@@ -154,7 +154,7 @@ class AddParents extends StatelessWidget {
                     context.read<FamilyTreeBloc>().add(UpdateOrAddParents(
                         child: node, father: father!, mother: mother!));
                   }
-                  Navigator.pop(context);
+                                Navigator.popUntil(context, (route) => route.isFirst);
                 },
                 child: const Text("Save"),
               )
