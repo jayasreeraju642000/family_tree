@@ -1,3 +1,4 @@
+import 'package:family_tree/bloc/add_parent_visibility/add_parents_visibility_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,10 +11,9 @@ import 'package:intl/intl.dart';
 // ignore: must_be_immutable
 class AddParents extends StatelessWidget {
   final Person node;
-  AddParents({
-    Key? key,
-    required this.node,
-  }) : super(key: key);
+  final AddParentsVisibilityState? addParentsVisibilityState;
+  AddParents({Key? key, required this.node, this.addParentsVisibilityState})
+      : super(key: key);
   final nameController = TextEditingController();
   final dateOfBirthController = TextEditingController();
   final dateOfDeathController = TextEditingController();
@@ -23,143 +23,17 @@ class AddParents extends StatelessWidget {
     context.read<FamilyTreeBloc>().add(FamilyTreeAllNodeLoadingEvent());
     Person? father;
     Person? mother;
+    if (addParentsVisibilityState != null) {
+      mother = addParentsVisibilityState!.mother;
+      father = addParentsVisibilityState!.father;
+    }
     return BlocConsumer<FamilyTreeBloc, FamilyTreeState>(
       listener: (context, state) {},
       builder: (context, state) {
         if (state is FamilyTreeAllNodesLoaded) {
-          return AlertDialog(
-            title: Row(
-              children: [
-                const Expanded(child: Text("Add Parents")),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Icon(Icons.close),
-                )
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<Person>(
-                  value: father,
-                  decoration: InputDecoration(
-                      label: const Text("Name of Father: "),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8))),
-                  hint: const Text("Select an option"),
-                  onChanged: (value) {
-                    if (value?.id == -1) {
-                      _showAddNewItemDialog(
-                        context,
-                        state.nodes,
-                        state.verticalGap,
-                        value!,
-                        state,
-                      );
-                    } else {
-                      father = value;
-                    }
-                  },
-                  items: state.nodes
-                      .where((element) =>
-                          element.level == node.level - 1 &&
-                          element.gender == "M")
-                      .toList()
-                      .map(
-                        (e) => DropdownMenuItem<Person>(
-                          value: e,
-                          child: Text(e.name),
-                        ),
-                      )
-                      .toList()
-                    ..add(DropdownMenuItem(
-                      value: Person(
-                          id: -1,
-                          name: '',
-                          gender: "M",
-                          level: node.level - 1,
-                          xCoordinate: node.xCoordinate,
-                          yCoordinates: node.yCoordinates - state.verticalGap,
-                          relationData: [
-                            RelationData(
-                                relatedUserId: node.id, relationTypeId: 2)
-                          ]),
-                      child: const Text("Add New..."),
-                    )),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                DropdownButtonFormField<Person>(
-                  value: mother,
-                  hint: const Text("Select an option"),
-                  decoration: InputDecoration(
-                      label: const Text("Name of Mother: "),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8))),
-                  onChanged: (value) {
-                    if (value?.id == -1) {
-                      _showAddNewItemDialog(
-                        context,
-                        state.nodes,
-                        state.verticalGap,
-                        value!,
-                        state,
-                      );
-                    } else {
-                      mother = value;
-                    }
-                  },
-                  items: state.nodes
-                      .where((element) =>
-                          element.level == node.level - 1 &&
-                          element.gender == "F")
-                      .toList()
-                      .map(
-                        (e) => DropdownMenuItem<Person>(
-                          value: e,
-                          child: Text(e.name),
-                        ),
-                      )
-                      .toList()
-                    ..add(DropdownMenuItem(
-                      value: Person(
-                          id: -1,
-                          name: '',
-                          gender: "F",
-                          level: node.level - 1,
-                          xCoordinate: node.xCoordinate +
-                              state.widthOfNode +
-                              state.horizontalGap,
-                          yCoordinates: node.yCoordinates - state.verticalGap,
-                          relationData: [
-                            RelationData(
-                                relatedUserId: node.id, relationTypeId: 2)
-                          ]),
-                      child: const Text("Add New..."),
-                    )),
-                ),
-              ],
-            ),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  if (father != null && mother != null) {
-                    context.read<FamilyTreeBloc>().add(UpdateOrAddParents(
-                        child: node, father: father!, mother: mother!));
-                  }
-                                Navigator.popUntil(context, (route) => route.isFirst);
-                },
-                child: const Text("Save"),
-              )
-            ],
-          );
+          return addParentsVisibilityState != null
+              ? bodyContent(context, father, state, mother)
+              : alertContent(context, father, state, mother);
         } else {
           return const Center(
             child: CircularProgressIndicator(),
@@ -169,10 +43,166 @@ class AddParents extends StatelessWidget {
     );
   }
 
+  AlertDialog alertContent(BuildContext context, Person? father,
+      FamilyTreeAllNodesLoaded state, Person? mother) {
+    return AlertDialog(
+      title: Row(
+        children: [
+          const Expanded(child: Text("Add Parents")),
+          InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(Icons.close),
+          )
+        ],
+      ),
+      content: bodyContent(context, father, state, mother),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            if (father != null && mother != null) {
+              context.read<FamilyTreeBloc>().add(
+                  AddParentEvent(child: node, father: father, mother: mother));
+            }
+            Navigator.popUntil(context, (route) => route.isFirst);
+          },
+          child: const Text("Save"),
+        )
+      ],
+    );
+  }
+
+  Widget bodyContent(BuildContext context, Person? father,
+      FamilyTreeAllNodesLoaded state, Person? mother) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        DropdownButtonFormField<Person>(
+          value: father,
+          decoration: InputDecoration(
+              label: const Text("Name of Father: "),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+          hint: const Text("Select an option"),
+          onChanged: (value) {
+            if (value?.id == -1) {
+              _showAddNewItemDialog(
+                context,
+                value!,
+                state,
+              );
+            } else {
+              father = value;
+              if (addParentsVisibilityState != null) {
+                context.read<AddParentsVisibilityCubit>().change(
+                      motherData: mother,
+                      fatherData: father,
+                      value: addParentsVisibilityState?.isAddParentChecked ??
+                          false,
+                    );
+              }
+            }
+          },
+          items: state.nodes
+              .where((element) =>
+                  element.level == node.level - 1 && element.gender == "M")
+              .toList()
+              .map(
+                (e) => DropdownMenuItem<Person>(
+                  value: e,
+                  child: Text(e.name),
+                ),
+              )
+              .toList()
+            ..add(DropdownMenuItem(
+              value: Person(
+                  id: -1,
+                  name: '',
+                  gender: gender == Gender.male
+                      ? "M"
+                      : gender == Gender.female
+                          ? "F"
+                          : "O",
+                  level: node.level - 1,
+                  xCoordinate: node.xCoordinate,
+                  yCoordinates: node.yCoordinates - state.verticalGap,
+                  relationData: [
+                    RelationData(relatedUserId: node.id, relationTypeId: 2)
+                  ]),
+              child: const Text("Add New..."),
+            )),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        DropdownButtonFormField<Person>(
+          value: mother,
+          hint: const Text("Select an option"),
+          decoration: InputDecoration(
+              label: const Text("Name of Mother: "),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+          onChanged: (value) {
+            if (value?.id == -1) {
+              _showAddNewItemDialog(
+                context,
+                value!,
+                state,
+              );
+            } else {
+              mother = value;
+              if (addParentsVisibilityState != null) {
+                context.read<AddParentsVisibilityCubit>().change(
+                      motherData: mother,
+                      fatherData: father,
+                      value: addParentsVisibilityState?.isAddParentChecked ??
+                          false,
+                    );
+              }
+            }
+          },
+          items: state.nodes
+              .where((element) =>
+                  element.level == node.level - 1 && element.gender == "F")
+              .toList()
+              .map(
+                (e) => DropdownMenuItem<Person>(
+                  value: e,
+                  child: Text(e.name),
+                ),
+              )
+              .toList()
+            ..add(DropdownMenuItem(
+              value: Person(
+                  id: -1,
+                  name: '',
+                  gender: gender == Gender.male
+                      ? "M"
+                      : gender == Gender.female
+                          ? "F"
+                          : "O",
+                  level: node.level - 1,
+                  xCoordinate: node.xCoordinate +
+                      state.widthOfNode +
+                      state.horizontalGap,
+                  yCoordinates: node.yCoordinates - state.verticalGap,
+                  relationData: [
+                    RelationData(relatedUserId: node.id, relationTypeId: 2)
+                  ]),
+              child: const Text("Add New..."),
+            )),
+        ),
+      ],
+    );
+  }
+
   void _showAddNewItemDialog(
     BuildContext context,
-    List<Person> nodes,
-    double verticalGap,
     Person parent,
     FamilyTreeAllNodesLoaded state,
   ) {
@@ -188,7 +218,7 @@ class AddParents extends StatelessWidget {
                     gender: Gender.male,
                     name: '',
                   ));
-              return childContainer(context, state);
+              return childContainer(context,);
             }),
           ),
           actions: <Widget>[
@@ -203,24 +233,31 @@ class AddParents extends StatelessWidget {
               onPressed: () {
                 if (nameController.text.trim().isNotEmpty) {
                   _addNewItem(
-                      context,
-                      parent.copyWith(
-                          id: nodes.length + 1,
-                          name: nameController.text.trim(),
-                          dateOfBirth: dateOfBirthController.text.trim(),
-                          dateOfDeath: dateOfDeathController.text.trim(),
-                          level: node.level - 1,
-                          gender: gender == Gender.male
-                              ? "M"
-                              : gender == Gender.female
-                                  ? "F"
-                                  : "O",
-                          relationData: [
-                            RelationData(
-                              relatedUserId: node.id,
-                              relationTypeId: 2,
-                            )
-                          ]));
+                    context,
+                    parent.copyWith(
+                      id: -1,
+                      name: nameController.text.trim(),
+                      dateOfBirth: dateOfBirthController.text.trim(),
+                      dateOfDeath: dateOfDeathController.text.trim(),
+                      level: node.level - 1,
+                      gender: gender == Gender.male
+                          ? "M"
+                          : gender == Gender.female
+                              ? "F"
+                              : "O",
+                      relationData: [
+                        RelationData(
+                          relatedUserId: node.id,
+                          relationTypeId: 2,
+                        )
+                      ],
+                    ),
+                  );
+
+                  nameController.clear();
+                  dateOfBirthController.clear();
+                  dateOfDeathController.clear();
+                  gender = Gender.male;
                 }
               },
             ),
@@ -247,13 +284,15 @@ class AddParents extends StatelessWidget {
     }
   }
 
-  Column childContainer(BuildContext context, FamilyTreeAllNodesLoaded state) {
+  Column childContainer(
+      BuildContext context, ) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         BlocBuilder<NodeDataBloc, NodeDataState>(
           builder: (context, state) {
             if (state is NodeDataLoaded) {
+              gender = state.gender ?? gender;
               return Column(
                 children: [
                   TextField(
@@ -346,7 +385,7 @@ class AddParents extends StatelessWidget {
                                 gender = value;
                                 context.read<NodeDataBloc>().add(
                                       ChangeData(
-                                        gender: gender,
+                                        gender: value,
                                         name: nameController.text,
                                         dateOfDeath: dateOfDeathController.text,
                                         dateOfBirth: dateOfBirthController.text,
@@ -368,7 +407,7 @@ class AddParents extends StatelessWidget {
                                 gender = value;
                                 context.read<NodeDataBloc>().add(
                                       ChangeData(
-                                        gender: gender,
+                                        gender: value,
                                         name: nameController.text,
                                         dateOfDeath: dateOfDeathController.text,
                                         dateOfBirth: dateOfBirthController.text,
@@ -390,7 +429,7 @@ class AddParents extends StatelessWidget {
                                 gender = value;
                                 context.read<NodeDataBloc>().add(
                                       ChangeData(
-                                        gender: gender,
+                                        gender: value,
                                         name: nameController.text,
                                         dateOfDeath: dateOfDeathController.text,
                                         dateOfBirth: dateOfBirthController.text,
@@ -430,8 +469,6 @@ class AddParents extends StatelessWidget {
     );
     if (dateTime != null) {
       String formattedDate = DateFormat("dd-MM-yyyy").format(dateTime);
-      // String formattedDate =
-      //     "${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year.toString()}";
       if (context.mounted) {
         if (isDateOfBirth) {
           dateOfBirthController.text = formattedDate;

@@ -33,7 +33,7 @@ final class UpdateFamilyTreeNodeEvent extends FamilyTreeEvent {
   });
 }
 
-final class DeleteFamilyTreeNode extends FamilyTreeEvent{
+final class DeleteFamilyTreeNode extends FamilyTreeEvent {
   final Person node;
 
   DeleteFamilyTreeNode({required this.node});
@@ -45,23 +45,23 @@ final class AddFamilyNodeEvent extends FamilyTreeEvent {
   AddFamilyNodeEvent({required this.node, required this.isFromAddParents});
 }
 
-final class UpdateOrAddParents extends FamilyTreeEvent {
+final class AddParentEvent extends FamilyTreeEvent {
   final Person father, mother, child;
-  UpdateOrAddParents({
+  AddParentEvent({
     required this.child,
     required this.father,
     required this.mother,
   });
 }
 
-final class AddSiblings extends FamilyTreeEvent {
-  final Person father, mother, sibling;
+final class AddSiblingEvent extends FamilyTreeEvent {
+  final Person father, mother, sibling, node;
 
-  AddSiblings({
-    required this.father,
-    required this.mother,
-    required this.sibling,
-  });
+  AddSiblingEvent(
+      {required this.father,
+      required this.mother,
+      required this.sibling,
+      required this.node});
 }
 
 final class AddChildrenEvent extends FamilyTreeEvent {

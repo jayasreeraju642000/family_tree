@@ -33,40 +33,65 @@ class AddRelation extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          RichText(
+            text: TextSpan(
+                text: node.name,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
                 children: [
-                 Text(
-                    "Name: ${node.name}",
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),Text(
-                    "Gender: ${node.gender == "M" ? "Male" : node.gender == "F" ? "Female" : "Others"}",
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
+                  TextSpan(
+                    text: " (${node.gender})",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(fontWeight: FontWeight.w400),
+                  )
+                ]),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          RichText(
+            text: TextSpan(
+                text: "Date of birth: ",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(fontWeight: FontWeight.w400),
+                children: [
+                  TextSpan(
+                    text: node.dateOfBirth,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
-                  Text(
-                    "Date of birth: ${node.dateOfBirth}",
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
+                ]),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          RichText(
+            text: TextSpan(
+                text: "Date of death: ",
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(fontWeight: FontWeight.w400),
+                children: [
+                  TextSpan(
+                    text: node.dateOfDeath,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
-                  Text(
-                    "Date of death: ${node.dateOfBirth}",
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                    const SizedBox(
-                  height: 20,
-                ),
-                ],
-              ),
-            ],
+                ]),
+          ),
+          const SizedBox(
+            height: 20,
           ),
           if (node.relationData
               .where((element) => element.relationTypeId == 1)
@@ -87,30 +112,25 @@ class AddRelation extends StatelessWidget {
               height: 20,
             ),
           },
-          if (node.relationData
-              .where((element) => element.relationTypeId == 1)
-              .toList()
-              .isNotEmpty) ...{
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => MultiBlocProvider(providers: [
-                    BlocProvider(
-                      create: (context) => FamilyTreeBloc(),
-                    ),
-                    BlocProvider(
-                      create: (context) => NodeDataBloc(),
-                    )
-                  ], child: AddSiblingView(node: node)),
-                );
-              },
-              child: const Text("Add Siblings"),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-          },
+          ElevatedButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => MultiBlocProvider(providers: [
+                  BlocProvider(
+                    create: (context) => FamilyTreeBloc(),
+                  ),
+                  BlocProvider(
+                    create: (context) => NodeDataBloc(),
+                  )
+                ], child: AddSiblingView(node: node)),
+              );
+            },
+            child: const Text("Add Siblings"),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           ElevatedButton(
             onPressed: () {
               showDialog(

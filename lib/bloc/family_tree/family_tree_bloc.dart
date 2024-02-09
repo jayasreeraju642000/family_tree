@@ -19,6 +19,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
 
   List<Person> sampleData =
       sample.map((sampleData) => Person.fromMap(sampleData)).toList();
+
   List<Person> visitedNodes = [];
   Map<int, double> lastLevelWiseXcordinate = {};
   int largestLevel = 0;
@@ -49,7 +50,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
           heightOfNode: heightOfNode,
           verticalGap: verticalGap));
     });
-
     on<UpdateFamilyTreeNodeEvent>((event, emit) {
       emit(FamilyTreeLoading());
       event.node.name = event.name ?? event.node.name;
@@ -66,13 +66,11 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
             verticalGap: verticalGap),
       );
     });
-
     on<AddFamilyNodeEvent>((event, emit) {
       emit(FamilyTreeLoading());
-      if (!nodes.contains(event.node)) {
-        event.node.isNodePlaced = true;
-        nodes.add(event.node);
-      }
+
+      addNewNode(event.node);
+
       if (!event.isFromAddParents) {
         loadFamilyTree(emit);
       } else {
@@ -83,53 +81,47 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
             heightOfNode: heightOfNode));
       }
     });
-
-    on<UpdateOrAddParents>((event, emit) {
+    on<AddParentEvent>((event, emit) {
       emit(FamilyTreeLoading());
-      if (!event.father.relationData
-          .any((element) => element.relatedUserId == event.mother.id)) {
-        event.father.relationData.add(
-          RelationData(relatedUserId: event.mother.id, relationTypeId: 0),
-        );
+      addOrUpdateParentEvent(event.father, event.mother, event.child);
+      loadFamilyTree(emit);
+    });
+    on<AddSiblingEvent>((event, emit) async {
+      emit(FamilyTreeLoading());
+      Person father = event.father;
+      Person mother = event.mother;
+      if (father.id == -1) {
+        father = await addNewNode(father);
       }
-      if (!event.father.relationData
-          .any((element) => element.relatedUserId == event.child.id)) {
-        event.father.relationData.add(
-          RelationData(relatedUserId: event.child.id, relationTypeId: 2),
-        );
+      if (mother.id == -1) {
+        mother = await addNewNode(mother);
       }
 
-      if (!event.mother.relationData
-          .any((element) => element.relatedUserId == event.father.id)) {
-        event.mother.relationData.add(
-          RelationData(relatedUserId: event.father.id, relationTypeId: 0),
-        );
+      if (event.node.relationData
+          .where((element) => element.relationTypeId == 1)
+          .toList()
+          .isEmpty) {
+        await addOrUpdateParentEvent(father, mother, event.node);
       }
-      if (!event.mother.relationData
-          .any((element) => element.relatedUserId == event.child.id)) {
-        event.mother.relationData.add(
-          RelationData(relatedUserId: event.child.id, relationTypeId: 2),
-        );
+      father.relationData.add(
+          RelationData(relatedUserId: nodes.length + 1, relationTypeId: 2));
+      mother.relationData.add(
+          RelationData(relatedUserId: nodes.length + 1, relationTypeId: 2));
+      var sibling = event.sibling.copyWith(id: nodes.length + 1);
+      if (!sibling.relationData
+          .any((element) => element.relatedUserId == father.id)) {
+        sibling.relationData
+            .add(RelationData(relatedUserId: father.id, relationTypeId: 1));
       }
-      event.child.relationData
-          .removeWhere((element) => element.relationTypeId == 1);
-      event.child.relationData.addAll([
-        RelationData(relatedUserId: event.mother.id, relationTypeId: 1),
-        RelationData(relatedUserId: event.father.id, relationTypeId: 1),
-      ]);
+      if (!sibling.relationData
+          .any((element) => element.relatedUserId == mother.id)) {
+        sibling.relationData
+            .add(RelationData(relatedUserId: mother.id, relationTypeId: 1));
+      }
+      nodes.add(sibling);
 
       loadFamilyTree(emit);
     });
-
-    on<AddSiblings>((event, emit) {
-      event.father.relationData.add(
-          RelationData(relatedUserId: nodes.length + 1, relationTypeId: 2));
-      event.mother.relationData.add(
-          RelationData(relatedUserId: nodes.length + 1, relationTypeId: 2));
-      nodes.add(event.sibling.copyWith(id: nodes.length + 1));
-      loadFamilyTree(emit);
-    });
-
     on<UpdateVisibilityOfRelatedNodes>((event, emit) {
       emit(FamilyTreeLoading());
       if (!nodeFamiliesExpandedId.containsKey(event.node.id)) {
@@ -178,7 +170,26 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
                     .toList());
               }
             }
+
             exansionHidingForChildren(children);
+          }
+          var partners = event.node.relationData
+              .where((element) => element.relationTypeId == 0)
+              .toList()
+              .map((id) => id.relatedUserId)
+              .toList()
+              .map((child) => nodes.firstWhere((node) => node.id == child))
+              .toList();
+          for (var partner in partners) {
+            var children = partner.relationData
+                .where((element) => element.relationTypeId == 2)
+                .toList()
+                .map((id) => id.relatedUserId)
+                .toList()
+                .map((child) => nodes.firstWhere((node) => node.id == child))
+                .toList();
+            exansionHidingForChildren(children);
+            partner.isActive = false;
           }
         } else {
           var children = event.node.relationData
@@ -216,7 +227,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       }
       loadFamilyTree(emit);
     });
-
     on<AddPartnerNodeEvent>((event, emit) {
       var partner = event.partnerNode.copyWith(id: nodes.length + 1);
       nodes.add(partner);
@@ -224,7 +234,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
           .add(RelationData(relatedUserId: partner.id, relationTypeId: 0));
       loadFamilyTree(emit);
     });
-
     on<AddChildrenEvent>((event, emit) {
       emit(FamilyTreeLoading());
 
@@ -246,6 +255,48 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       }
       loadFamilyTree(emit);
     });
+  }
+
+  Future<Person> addNewNode(Person node) async {
+    node.isNodePlaced = true;
+    var newNode = node.copyWith(id: nodes.length + 1);
+    nodes.add(newNode);
+    return newNode;
+  }
+
+  Future<Map<String, Person>> addOrUpdateParentEvent(
+      Person father, mother, child) async {
+    if (!father.relationData
+        .any((element) => element.relatedUserId == mother.id)) {
+      father.relationData.add(
+        RelationData(relatedUserId: mother.id, relationTypeId: 0),
+      );
+    }
+    if (!father.relationData
+        .any((element) => element.relatedUserId == child.id)) {
+      father.relationData.add(
+        RelationData(relatedUserId: child.id, relationTypeId: 2),
+      );
+    }
+
+    if (!mother.relationData
+        .any((element) => element.relatedUserId == father.id)) {
+      mother.relationData.add(
+        RelationData(relatedUserId: father.id, relationTypeId: 0),
+      );
+    }
+    if (!mother.relationData
+        .any((element) => element.relatedUserId == child.id)) {
+      mother.relationData.add(
+        RelationData(relatedUserId: child.id, relationTypeId: 2),
+      );
+    }
+    child.relationData.removeWhere((element) => element.relationTypeId == 1);
+    child.relationData.addAll([
+      RelationData(relatedUserId: mother.id, relationTypeId: 1),
+      RelationData(relatedUserId: father.id, relationTypeId: 1),
+    ]);
+    return {"father": father, "mother": mother, "child": child};
   }
 
   void exansionHidingForChildren(List<Person> children) {

@@ -1,6 +1,8 @@
+import 'package:family_tree/bloc/add_parent_visibility/add_parents_visibility_cubit.dart';
 import 'package:family_tree/bloc/counter_cubit/counter_cubit.dart';
 import 'package:family_tree/bloc/family_tree/family_tree_bloc.dart';
 import 'package:family_tree/bloc/node_data/node_data_bloc.dart';
+import 'package:family_tree/widgets/add_parents.dart';
 import 'package:family_tree/widgets/edit_node_data.dart';
 import 'package:family_tree/family_tree.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +25,19 @@ class AddSiblingView extends StatelessWidget {
     List<TextEditingController> nameController = [];
     List<TextEditingController> dateOfBirthController = [];
     List<TextEditingController> dateOfDeathController = [];
-    return BlocProvider(
-      create: (context) => CounterCubit(),
+
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => CounterCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AddParentsVisibilityCubit(),
+        )
+      ],
       child: Builder(builder: (context) {
         context.watch<CounterCubit>().state;
-
+        context.watch<AddParentsVisibilityCubit>().state;
         return BlocBuilder<CounterCubit, CounterState>(
           builder: (context, counterState) {
             return Builder(builder: (context) {
@@ -47,146 +57,394 @@ class AddSiblingView extends StatelessWidget {
                 listener: (context, state) {},
                 builder: (context, state) {
                   if (state is FamilyTreeAllNodesLoaded) {
-                    return AlertDialog(
-                      title: Row(
-                        children: [
-                          const Expanded(child: Text("Add Siblings")),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Icon(Icons.close),
-                          )
-                        ],
-                      ),
-                      content: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            for (int i = 0; i < counterState.count; i++) ...{
-                              childContainer(
+                    return BlocBuilder<AddParentsVisibilityCubit,
+                        AddParentsVisibilityState>(
+                      builder: (context, parentCheckBoxstate) {
+                        return AlertDialog(
+                          title: Row(
+                            children: [
+                              const Expanded(child: Text("Add Siblings")),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Icon(Icons.close),
+                              )
+                            ],
+                          ),
+                          content: SingleChildScrollView(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              RichText(
+                                text: TextSpan(
+                                    text: node.name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                    children: [
+                                      TextSpan(
+                                        text: " (${node.gender})",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.w400),
+                                      )
+                                    ]),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                    text: "Date of birth: ",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(fontWeight: FontWeight.w400),
+                                    children: [
+                                      TextSpan(
+                                        text: node.dateOfBirth,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.w600),
+                                      ),
+                                    ]),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              RichText(
+                                text: TextSpan(
+                                    text: "Date of death: ",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(fontWeight: FontWeight.w400),
+                                    children: [
+                                      TextSpan(
+                                        text: node.dateOfDeath,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.w600),
+                                      ),
+                                    ]),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              if (!node.relationData.any((element) =>
+                                  element.relationTypeId == 1)) ...{
+                                const Text(
+                                    "If there is no parent data, siblings with unknown parents will be created."),
+                                Row(
+                                  children: [
+                                    Checkbox(
+                                      value: parentCheckBoxstate
+                                          .isAddParentChecked,
+                                      onChanged: (value) {
+                                        context
+                                            .read<AddParentsVisibilityCubit>()
+                                            .change(
+                                                value: value!,
+                                                fatherData:
+                                                    parentCheckBoxstate.father,
+                                                motherData:
+                                                    parentCheckBoxstate.mother);
+                                      },
+                                    ),
+                                    const Text("Add Parents")
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                if (parentCheckBoxstate.isAddParentChecked) ...{
+                                  AddParents(
+                                    node: node,
+                                    addParentsVisibilityState:
+                                        parentCheckBoxstate,
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  )
+                                }
+                              },
+                              for (int i = 0; i < counterState.count; i++) ...{
+                                childContainer(
                                   context,
                                   i,
                                   gender,
                                   state,
                                   nameController,
                                   dateOfBirthController,
-                                  dateOfDeathController),
-                            }
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        Row(
-                          children: [
-                            const Text(
-                              "No. of children: ",
-                              style: TextStyle(fontSize: 12),
+                                  dateOfDeathController,
+                                ),
+                              }
+                            ],
+                          )),
+                          actions: [
+                            Row(
+                              children: [
+                                const Text(
+                                  "No. of children: ",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    context.read<CounterCubit>().decrement();
+                                  },
+                                  child: const Icon(
+                                    Icons.remove,
+                                    size: 15,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                Text(
+                                  "${counterState.count}",
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    context.read<CounterCubit>().increment();
+                                  },
+                                  child: const Icon(
+                                    Icons.add,
+                                    size: 15,
+                                  ),
+                                ),
+                              ],
                             ),
-                            InkWell(
-                              onTap: () {
-                                context.read<CounterCubit>().decrement();
-                              },
-                              child: const Icon(
-                                Icons.remove,
-                                size: 15,
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Text(
-                              "${counterState.count}",
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            InkWell(
-                              onTap: () {
-                                context.read<CounterCubit>().increment();
-                              },
-                              child: const Icon(
-                                Icons.add,
-                                size: 15,
-                              ),
-                            ),
-                          ],
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            for (int i = 0; i < counterState.count; i++) {
-                              if (familyTreeBloc.state
-                                  is FamilyTreeAllNodesLoaded) {
-                                if (node.relationData.any(
-                                    (element) => element.relationTypeId == 1)) {
-                                  var parentIds = node.relationData
-                                      .where((element) =>
-                                          element.relationTypeId == 1)
-                                      .toList()
-                                      .map((item) => item.relatedUserId);
-                                  if (parentIds.isNotEmpty) {
-                                    var parents = parentIds
-                                        .map((e) => FamilyTreeBloc.nodes
-                                            .firstWhere(
-                                                (element) => element.id == e))
-                                        .toList();
-                                    if (parents.isNotEmpty) {
-                                      familyTreeBloc.add(
-                                        AddSiblings(
-                                          father: parents.firstWhere(
-                                              (element) =>
-                                                  element.gender == "M"),
-                                          mother: parents.firstWhere(
-                                              (element) =>
-                                                  element.gender == "F"),
-                                          sibling: Person(
-                                              id: -1,
-                                              level: node.level,
-                                              name: nameController[i].text,
-                                              dateOfDeath:
-                                                  dateOfDeathController[i]
-                                                      .text
-                                                      .trim(),
-                                              dateOfBirth:
-                                                  dateOfBirthController[i]
-                                                      .text
-                                                      .trim(),
-                                              gender: gender[i] == Gender.female
-                                                  ? "F"
-                                                  : gender[i] == Gender.male
-                                                      ? "M"
-                                                      : "O",
-                                              relationData: [
-                                                RelationData(
-                                                    relatedUserId: parents
-                                                        .firstWhere((element) =>
-                                                            element.gender ==
-                                                            "M")
-                                                        .id,
-                                                    relationTypeId: 1),
-                                                RelationData(
-                                                    relatedUserId: parents
-                                                        .firstWhere((element) =>
-                                                            element.gender ==
-                                                            "F")
-                                                        .id,
-                                                    relationTypeId: 1)
-                                              ]),
-                                        ),
-                                      );
+                            ElevatedButton(
+                              onPressed: () {
+                                for (int i = 0; i < counterState.count; i++) {
+                                  if (familyTreeBloc.state
+                                      is FamilyTreeAllNodesLoaded) {
+                                    var sibling = Person(
+                                        id: -1,
+                                        level: node.level,
+                                        name: nameController[i].text,
+                                        dateOfDeath: dateOfDeathController[i]
+                                            .text
+                                            .trim(),
+                                        dateOfBirth: dateOfBirthController[i]
+                                            .text
+                                            .trim(),
+                                        gender: gender[i] == Gender.female
+                                            ? "F"
+                                            : gender[i] == Gender.male
+                                                ? "M"
+                                                : "O",
+                                        relationData: []);
+                                    if (node.relationData.any((element) =>
+                                        element.relationTypeId == 1)) {
+                                      var parentIds = node.relationData
+                                          .where((element) =>
+                                              element.relationTypeId == 1)
+                                          .toList()
+                                          .map((item) => item.relatedUserId);
+                                      if (parentIds.isNotEmpty) {
+                                        var parents = parentIds
+                                            .map((e) => FamilyTreeBloc.nodes
+                                                .firstWhere((element) =>
+                                                    element.id == e))
+                                            .toList();
+                                        if (parents.isNotEmpty) {
+                                          familyTreeBloc.add(
+                                            AddSiblingEvent(
+                                                node: node,
+                                                father: parents.firstWhere(
+                                                    (element) =>
+                                                        element.gender == "M"),
+                                                mother: parents.firstWhere(
+                                                    (element) =>
+                                                        element.gender == "F"),
+                                                sibling: sibling
+                                                    .copyWith(relationData: [
+                                                  RelationData(
+                                                      relatedUserId: parents
+                                                          .firstWhere(
+                                                              (element) =>
+                                                                  element
+                                                                      .gender ==
+                                                                  "M")
+                                                          .id,
+                                                      relationTypeId: 1),
+                                                  RelationData(
+                                                      relatedUserId: parents
+                                                          .firstWhere(
+                                                              (element) =>
+                                                                  element
+                                                                      .gender ==
+                                                                  "F")
+                                                          .id,
+                                                      relationTypeId: 1)
+                                                ])),
+                                          );
+                                        }
+                                      }
+                                    } else {
+                                      if (parentCheckBoxstate.father != null &&
+                                          parentCheckBoxstate.mother != null) {
+                                        familyTreeBloc.add(
+                                          AddSiblingEvent(
+                                            node: node,
+                                            sibling:
+                                                sibling.copyWith(relationData: [
+                                              RelationData(
+                                                  relatedUserId:
+                                                      parentCheckBoxstate
+                                                          .father!.id,
+                                                  relationTypeId: 1),
+                                              RelationData(
+                                                  relatedUserId:
+                                                      parentCheckBoxstate
+                                                          .mother!.id,
+                                                  relationTypeId: 1)
+                                            ]),
+                                            father: parentCheckBoxstate.father!,
+                                            mother: parentCheckBoxstate.mother!,
+                                          ),
+                                        );
+                                      } else if (parentCheckBoxstate.father !=
+                                              null &&
+                                          parentCheckBoxstate.mother == null) {
+                                        familyTreeBloc.add(
+                                          AddSiblingEvent(
+                                            node: node,
+                                            sibling:
+                                                sibling.copyWith(relationData: [
+                                              RelationData(
+                                                  relatedUserId:
+                                                      parentCheckBoxstate
+                                                          .father!.id,
+                                                  relationTypeId: 1),
+                                              RelationData(
+                                                  relatedUserId:
+                                                      parentCheckBoxstate
+                                                          .mother!.id,
+                                                  relationTypeId: 1)
+                                            ]),
+                                            father: parentCheckBoxstate.father!,
+                                            mother: Person(
+                                                id: -1,
+                                                name: 'Mother (${node.name})',
+                                                gender: "F",
+                                                level: node.level - 1,
+                                                xCoordinate: node.xCoordinate +
+                                                    state.widthOfNode +
+                                                    state.horizontalGap,
+                                                yCoordinates:
+                                                    node.yCoordinates -
+                                                        state.verticalGap,
+                                                relationData: [
+                                                  RelationData(
+                                                      relatedUserId: node.id,
+                                                      relationTypeId: 2)
+                                                ]),
+                                          ),
+                                        );
+                                      } else if (parentCheckBoxstate.father ==
+                                              null &&
+                                          parentCheckBoxstate.mother != null) {
+                                        familyTreeBloc.add(
+                                          AddSiblingEvent(
+                                            node: node,
+                                            sibling:
+                                                sibling.copyWith(relationData: [
+                                              RelationData(
+                                                  relatedUserId:
+                                                      parentCheckBoxstate
+                                                          .father!.id,
+                                                  relationTypeId: 1),
+                                              RelationData(
+                                                  relatedUserId:
+                                                      parentCheckBoxstate
+                                                          .mother!.id,
+                                                  relationTypeId: 1)
+                                            ]),
+                                            mother: parentCheckBoxstate.mother!,
+                                            father: Person(
+                                                id: -1,
+                                                name: 'Father (${node.name})',
+                                                gender: "M",
+                                                level: node.level - 1,
+                                                xCoordinate: node.xCoordinate +
+                                                    state.widthOfNode +
+                                                    state.horizontalGap,
+                                                yCoordinates:
+                                                    node.yCoordinates -
+                                                        state.verticalGap,
+                                                relationData: [
+                                                  RelationData(
+                                                      relatedUserId: node.id,
+                                                      relationTypeId: 2)
+                                                ]),
+                                          ),
+                                        );
+                                      } else {
+                                        familyTreeBloc.add(
+                                          AddSiblingEvent(
+                                            node: node,
+                                            sibling:
+                                                sibling,
+                                            mother: Person(
+                                                id: -1,
+                                                name: 'Mother (${node.name})',
+                                                gender: "M",
+                                                level: node.level - 1,
+                                                xCoordinate: node.xCoordinate +
+                                                    state.widthOfNode +
+                                                    state.horizontalGap,
+                                                yCoordinates:
+                                                    node.yCoordinates -
+                                                        state.verticalGap,
+                                                relationData: [
+                                                  RelationData(
+                                                      relatedUserId: node.id,
+                                                      relationTypeId: 2)
+                                                ]),
+                                            father: Person(
+                                                id: -1,
+                                                name: 'Father (${node.name})',
+                                                gender: "M",
+                                                level: node.level - 1,
+                                                xCoordinate: node.xCoordinate +
+                                                    state.widthOfNode +
+                                                    state.horizontalGap,
+                                                yCoordinates:
+                                                    node.yCoordinates -
+                                                        state.verticalGap,
+                                                relationData: [
+                                                  RelationData(
+                                                      relatedUserId: node.id,
+                                                      relationTypeId: 2)
+                                                ]),
+                                          ),
+                                        );
+                                      }
                                     }
                                   }
                                 }
-                              }
-                            }
-                                Navigator.popUntil(context, (route) => route.isFirst);
-                          },
-                          child: const Text("Save"),
-                        )
-                      ],
+                                Navigator.popUntil(
+                                    context, (route) => route.isFirst);
+                              },
+                              child: const Text("Save"),
+                            )
+                          ],
+                        );
+                      },
                     );
                   } else {
                     return const Center(
@@ -233,7 +491,7 @@ class AddSiblingView extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                     Row(children: [
+                  Row(children: [
                     Expanded(
                       child: TextFormField(
                         controller: dateOfBirthController[i],
@@ -302,7 +560,7 @@ class AddSiblingView extends StatelessWidget {
                       ),
                     ),
                   ]),
-                const SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Row(
@@ -437,7 +695,7 @@ class AddSiblingView extends StatelessWidget {
     }
   }
 
-   String? dateOfBirthValidator(
+  String? dateOfBirthValidator(
       String? value, List<TextEditingController> dateOfDeathController, int i) {
     if (value != null &&
         value.trim().isNotEmpty &&

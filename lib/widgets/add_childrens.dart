@@ -456,7 +456,6 @@ class AddChildView extends StatelessWidget {
                   _addNewItem(
                       context,
                       parent.copyWith(
-                          id: nodes.length + 1,
                           name: newItem,
                           relationData: [
                             RelationData(
