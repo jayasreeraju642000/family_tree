@@ -65,6 +65,8 @@ class FamilyTreePainter extends CustomPainter {
     for (var node in nodes) {
       // draw line to partner
       partnerDrawing(node, canvas);
+      childDrawingWithoutPartner(node, canvas);
+
       childVerticlLineDrawing(node, canvas);
     }
   }
@@ -151,23 +153,19 @@ class FamilyTreePainter extends CustomPainter {
       if (commonChildren.length == 1) {
         drawHorizontalLineToSingleChild(
           commonChildren,
-          node,
-          partnerNode,
+          node.xCoordinate,
+          partnerNode.xCoordinate,
           canvas,
+          node.yCoordinates,
         );
       } else {
-        multiChildConnectorDrawing(
-          commonChildren,
-          canvas,
-          node,
-          partnerNode,
-        );
+        multiChildConnectorDrawing(commonChildren, canvas, node.yCoordinates);
       }
     }
   }
 
-  void multiChildConnectorDrawing(List<int> commonChildren, Canvas canvas,
-      Person node, Person partnerNode) {
+  void multiChildConnectorDrawing(
+      List<int> commonChildren, Canvas canvas, double nodeYCoordinate) {
     List<Person> children = [];
     for (var child in commonChildren) {
       if (nodes.map((item) => item.id).toList().contains(child)) {
@@ -189,21 +187,25 @@ class FamilyTreePainter extends CustomPainter {
     }
     canvas.drawLine(
       Offset(leftMostChildXcoordinate + nodeWidth / 2,
-          node.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+          nodeYCoordinate + nodeHeight / 2 + verticalGap / 2),
       Offset(rightMostChildXcoordinate + nodeWidth / 2,
-          partnerNode.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+          nodeYCoordinate + nodeHeight / 2 + verticalGap / 2),
       Paint()
         ..color = Colors.grey
         ..strokeWidth = 1,
     );
   }
 
-  void drawHorizontalLineToSingleChild(List<int> commonChildren, Person node,
-      Person partnerNode, Canvas canvas) {
+  void drawHorizontalLineToSingleChild(
+      List<int> commonChildren,
+      double nodeXCoordinate,
+      double partnerNodeXCoordinate,
+      Canvas canvas,
+      double nodeYCoordinate) {
     var child =
         nodes.firstWhere((element) => element.id == commonChildren.first);
-    double firstXCoordinate = node.xCoordinate;
-    double secondXCoordinate = partnerNode.xCoordinate;
+    double firstXCoordinate = nodeXCoordinate;
+    double secondXCoordinate = partnerNodeXCoordinate;
     double xCoordinate = (firstXCoordinate < secondXCoordinate
             ? firstXCoordinate
             : secondXCoordinate) +
@@ -212,9 +214,9 @@ class FamilyTreePainter extends CustomPainter {
 
     double childXcoordinate = child.xCoordinate + nodeWidth / 2;
     canvas.drawLine(
-      Offset(xCoordinate, node.yCoordinates + nodeHeight / 2 + verticalGap / 2),
-      Offset(childXcoordinate,
-          partnerNode.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+      Offset(xCoordinate, nodeYCoordinate + nodeHeight / 2 + verticalGap / 2),
+      Offset(
+          childXcoordinate, nodeYCoordinate + nodeHeight / 2 + verticalGap / 2),
       Paint()
         ..color = Colors.grey
         ..strokeWidth = 1,
@@ -247,6 +249,62 @@ class FamilyTreePainter extends CustomPainter {
             ..color = Colors.grey
             ..strokeWidth = 1,
         );
+      }
+    }
+  }
+
+  void childDrawingWithoutPartner(Person node, Canvas canvas) {
+    if (!node.relationData.any((element) => element.relationTypeId == 0)) {
+      canvas.drawLine(
+          Offset(node.xCoordinate+nodeWidth, node.yCoordinates + nodeHeight / 2 ),
+          Offset(nodeWidth+node.xCoordinate+horizontalGap/2,
+         node.yCoordinates + nodeHeight / 2 ),
+          Paint()
+            ..color = Colors.grey
+            ..strokeWidth = 1,
+        );
+      var childrenIdsOfNode = node.relationData
+          .where((element) => element.relationTypeId == 2)
+          .map((e) => e.relatedUserId)
+          .toList();
+      bool anyChildVisible = false;
+      for (var child in childrenIdsOfNode) {
+        if (nodes.map((item) => item.id).toList().contains(child)) {
+          anyChildVisible = true;
+          break;
+        }
+      }
+      if (anyChildVisible) {
+        double firstXCoordinate = node.xCoordinate;
+        double xCoordinate = firstXCoordinate + nodeWidth + horizontalGap / 2;
+        canvas.drawLine(
+          Offset(xCoordinate, node.yCoordinates + nodeHeight / 2),
+          Offset(xCoordinate,
+              node.yCoordinates + nodeHeight / 2 + verticalGap / 2),
+          Paint()
+            ..color = Colors.grey
+            ..strokeWidth = 1,
+        );
+      }
+
+      if (childrenIdsOfNode.isNotEmpty)
+// if only have one child
+      {
+        if (childrenIdsOfNode.length == 1) {
+          drawHorizontalLineToSingleChild(
+            childrenIdsOfNode,
+            node.xCoordinate,
+            node.xCoordinate + nodeWidth + horizontalGap / 2,
+            canvas,
+            node.yCoordinates,
+          );
+        } else {
+          multiChildConnectorDrawing(
+            childrenIdsOfNode,
+            canvas,
+            node.yCoordinates,
+          );
+        }
       }
     }
   }
