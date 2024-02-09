@@ -232,7 +232,7 @@ class EditNodeData extends StatelessWidget {
                     actions: [
                       Row(
                         children: [
-                          ElevatedButton(
+                     if(!node.isPatient)     ElevatedButton(
                             onPressed: () {
                               showAdaptiveDialog(
                                 context: familyContext,barrierDismissible: true,

@@ -65,8 +65,10 @@ class FamilyTreePainter extends CustomPainter {
     for (var node in nodes) {
       // draw line to partner
       partnerDrawing(node, canvas);
-      childDrawingWithoutPartner(node, canvas);
-
+      if (node.relationData.any((element) => element.relationTypeId == 2) &&
+          !node.relationData.any((element) => element.relationTypeId == 0)) {
+        childDrawingWithoutPartner(node, canvas);
+      }
       childVerticlLineDrawing(node, canvas);
     }
   }
@@ -256,13 +258,14 @@ class FamilyTreePainter extends CustomPainter {
   void childDrawingWithoutPartner(Person node, Canvas canvas) {
     if (!node.relationData.any((element) => element.relationTypeId == 0)) {
       canvas.drawLine(
-          Offset(node.xCoordinate+nodeWidth, node.yCoordinates + nodeHeight / 2 ),
-          Offset(nodeWidth+node.xCoordinate+horizontalGap/2,
-         node.yCoordinates + nodeHeight / 2 ),
-          Paint()
-            ..color = Colors.grey
-            ..strokeWidth = 1,
-        );
+        Offset(
+            node.xCoordinate + nodeWidth, node.yCoordinates + nodeHeight / 2),
+        Offset(nodeWidth + node.xCoordinate + horizontalGap / 2,
+            node.yCoordinates + nodeHeight / 2),
+        Paint()
+          ..color = Colors.grey
+          ..strokeWidth = 1,
+      );
       var childrenIdsOfNode = node.relationData
           .where((element) => element.relationTypeId == 2)
           .map((e) => e.relatedUserId)
