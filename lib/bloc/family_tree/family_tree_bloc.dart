@@ -711,6 +711,20 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
             }
           }
           nodes.removeWhere((element) => element.id == partner.id);
+        } else {
+          if (directRelativesOfPatient.contains(partner.id) &&
+              directRelativesOfPatient.contains(node.id) &&
+              partner.id !=
+                  nodes.firstWhere((element) => element.isPatient).id) {
+            for (var element in nodes) {
+              if (element.relationData.any(
+                  (relatedData) => relatedData.relatedUserId == partner.id)) {
+                element.relationData.removeWhere(
+                    (relatedData) => relatedData.relatedUserId == partner.id);
+              }
+            }
+            nodes.removeWhere((element) => element.id == partner.id);
+          }
         }
       }
     }
