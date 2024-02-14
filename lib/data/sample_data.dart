@@ -73,7 +73,9 @@ List<Map<String, dynamic>> sample = [
     "level": -1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "F"
+    "gender": "F",
+    "isAlive": false,
+    "isConsagnious": true
   },
   {
     "id": 9,
@@ -85,7 +87,8 @@ List<Map<String, dynamic>> sample = [
     "level": -1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "F"
+    "gender": "F",
+    "isGenenticdone": true
   },
   {
     "id": 10,
@@ -99,7 +102,9 @@ List<Map<String, dynamic>> sample = [
     "level": -1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "F"
+    "gender": "F",
+    "lossofbaby": true,
+    "isAffected": true
   },
   {
     "id": 11,
@@ -140,7 +145,8 @@ List<Map<String, dynamic>> sample = [
     "level": 1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "M"
+    "gender": "M",
+    "isAffected": true
   },
   {
     "id": 14,
@@ -155,7 +161,8 @@ List<Map<String, dynamic>> sample = [
     "level": 1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "F"
+    "gender": "F",
+    "isTwin": true
   },
   {
     "id": 15,
@@ -193,7 +200,8 @@ List<Map<String, dynamic>> sample = [
     "level": 0,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "F"
+    "gender": "F",
+    "isPregnant": true,
   },
   {
     "id": 18,
@@ -365,7 +373,8 @@ List<Map<String, dynamic>> sample = [
     "level": 1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "F"
+    "gender": "F",
+    "isTwin": true
   },
   {
     "id": 31,
@@ -686,7 +695,8 @@ List<Map<String, dynamic>> sample = [
     "level": -1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "F"
+    "gender": "F",
+    "isAlive": false
   },
   {
     "id": 2,
@@ -701,7 +711,7 @@ List<Map<String, dynamic>> sample = [
     "level": -1,
     "dateOfBirth": "12-12-2000",
     "dateOfDeath": "12-12-2000",
-    "gender": "M"
+    "gender": "M",
   },
   {
     "id": 6,

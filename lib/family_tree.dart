@@ -50,9 +50,9 @@ class FamilyTree extends StatelessWidget {
                       children: [
                         Expanded(
                             child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: SingleChildScrollView(
                               controller: verticalScrollController,
                               child: SingleChildScrollView(
                                 controller: horizontalScrollController,
@@ -73,16 +73,16 @@ class FamilyTree extends StatelessWidget {
                                         : state.viewPortHeight,
                                     maxZoomWidth: state.viewPortWidth * 4,
                                     // initTotalZoomOut: true,
-                              
                                     scrollWeight: 5.0,
                                     initPosition: const Offset(0, 0),
                                     enableScroll: true,
                                     colorScrollBars:
                                         Theme.of(context).dividerColor,
-                                    doubleTapZoom: true, centerOnScale: true,
+                                    doubleTapZoom: true,
+                                    centerOnScale: true,
                                     canvasColor: Theme.of(context).canvasColor,
-                                    backgroundColor:
-                                        Theme.of(context).scaffoldBackgroundColor,
+                                    backgroundColor: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                     zoomSensibility: 0.05,
                                     child: Stack(
                                       children: [
@@ -107,9 +107,9 @@ class FamilyTree extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                                                        ),
-                              ),
-                            )),
+                            ),
+                          ),
+                        )),
                         if (pannelVisibility.isPannelVisible)
                           if (state.nodes.indexWhere((element) =>
                                   element.id ==

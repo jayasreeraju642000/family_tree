@@ -13,32 +13,69 @@ dependencies:
   flutter_bloc: ^8.1.4
   intl: ^0.19.0
   zoom_widget: ^2.0.1
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.4.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  # uses-material-design: true
+
 
   # To add assets to your package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+   - packages/family_tree/data/icons/pngtest.png
+   
+   - packages/family_tree/data/icons/consanguinous_no.svg
+
+   - packages/family_tree/data/icons/consanguinous_yes.svg
+
+   - packages/family_tree/data/icons/female_dead.svg
+
+   - packages/family_tree/data/icons/female_twin_dead.svg
+
+   - packages/family_tree/data/icons/consanguinous_no.svg
+
+   - packages/family_tree/data/icons/female_twin.svg
+
+   - packages/family_tree/data/icons/Femalefemaleicon.svg
+
+   - packages/family_tree/data/icons/genetic_test_done_no.svg
+
+   - packages/family_tree/data/icons/genetic_test_done_yes.svg
+
+   - packages/family_tree/data/icons/loss_of_baby_no.svg
+
+   - packages/family_tree/data/icons/loss_of_baby_yes.svg
+
+   - packages/family_tree/data/icons/male_dead.svg
+
+   - packages/family_tree/data/icons/male_twin_dead.svg
+
+   - packages/family_tree/data/icons/male_twin.svg
+
+   - packages/family_tree/data/icons/male.svg
+   - packages/family_tree/data/icons/pregnancy_no.svg
+
+   - packages/family_tree/data/icons/pregnancy_yes.svg
+
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
   #
-  # An image asset can refer to one or more resolution-specific "variants", see
+  # An image asset can refer to one or more resolution-specific variants, see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
   # To add custom fonts to your package, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
+  # in this flutter section. Each entry in this list should have a
+  # family key with the font family name, and a fonts key with a
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts:

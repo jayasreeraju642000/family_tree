@@ -14,12 +14,26 @@ class Person {
   double yCoordinates = 0.0;
   bool isPatient;
   bool isNodePlaced = false;
-  bool isActive=false;
+  bool isActive = false;
+  bool isAlive = true;
+  bool ispregnant = false;
+  bool isConsagnious = false;
+  bool isGenetictestdone = false;
+  bool lossofbaby = false;
+  bool isAffected = false;
+  bool isTwin = false;
   Person(
       {required this.id,
       required this.name,
       required this.gender,
       this.dateOfBirth,
+      this.isAffected = false,
+      this.isTwin = false,
+      this.isConsagnious = false,
+      this.isGenetictestdone = false,
+      this.ispregnant = false,
+      this.lossofbaby = false,
+      this.isAlive = true,
       this.dateOfDeath,
       required this.level,
       required this.relationData,
@@ -78,6 +92,13 @@ class Person {
             (x) => RelationData.fromMap(x),
           ),
         ),
+        isAlive: map["isAlive"] ?? true,
+        isAffected: map["isAffected"] ?? false,
+        ispregnant: map["isPregnant"] ?? false,
+        isConsagnious: map["isConsagnious"] ?? false,
+        isGenetictestdone: map["isGenenticdone"] ?? false,
+        lossofbaby: map["lossofbaby"] ?? false,
+        isTwin: map["isTwin"] ?? false,
         isPatient: map["isPatient"] ?? false);
   }
 

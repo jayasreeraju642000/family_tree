@@ -12,7 +12,7 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
   static List<Person> nodes = [];
   static List<Person> activeNodes = [];
   static Map<int, bool> nodeFamiliesExpandedId = {};
-  static double widthOfNode = 200;
+  static double widthOfNode = 0;
   static double heightOfNode = 40;
   static double verticalGap = 80;
   static List<int> directRelativesOfPatient = [];
@@ -323,12 +323,12 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
       largestLevel = nodes.map((node) => node.level).reduce(max);
 
       for (var i = 0; i < nodes.length; i++) {
-        var size = textSize(nodes[i].name, const TextStyle(fontSize: 20), 200);
+        var size = textSize(nodes[i].name, const TextStyle(fontSize: 20), 150);
         if (size.width >= widthOfNode) {
-          widthOfNode = size.width + 25;
+          widthOfNode = size.width;
         }
         if (size.height >= heightOfNode - 25) {
-          heightOfNode = size.height + 25;
+          heightOfNode = size.height + 25 + 150;
           verticalGap = 2 * heightOfNode;
         }
       }
@@ -711,20 +711,6 @@ class FamilyTreeBloc extends Bloc<FamilyTreeEvent, FamilyTreeState> {
             }
           }
           nodes.removeWhere((element) => element.id == partner.id);
-        } else {
-          if (directRelativesOfPatient.contains(partner.id) &&
-              directRelativesOfPatient.contains(node.id) &&
-              partner.id !=
-                  nodes.firstWhere((element) => element.isPatient).id) {
-            for (var element in nodes) {
-              if (element.relationData.any(
-                  (relatedData) => relatedData.relatedUserId == partner.id)) {
-                element.relationData.removeWhere(
-                    (relatedData) => relatedData.relatedUserId == partner.id);
-              }
-            }
-            nodes.removeWhere((element) => element.id == partner.id);
-          }
         }
       }
     }
